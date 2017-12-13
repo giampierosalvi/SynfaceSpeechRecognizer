@@ -31,7 +31,9 @@ The code is divided into the following parts:
 
 ### Dependencies
 The code depends on portaudio:  
-```sudo apt instal portaudio19-dev```
+```
+sudo apt instal portaudio19-dev
+```
 
 The NICO toolkit:
 ```
