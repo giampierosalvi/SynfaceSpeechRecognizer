@@ -16,7 +16,16 @@ all: librec.a
 librec.a: $(modules) 
 	ar rv librec.a $(modules)
 
-test_recognizer: test_recognizer.o
+test_recognizer_live: test_recognizer_live.o
+	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
+
+test_recognizer_offline: test_recognizer_offline.o
+	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
+
+test_audio: test_audio.o
+	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
+
+test_portaudio: test_portaudio.o
 	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
