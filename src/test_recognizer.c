@@ -194,12 +194,12 @@ int main(int argc, char **argv) {
   r->fe->lifter = 22.0;
 
   printf("configuring neural network...\n"); fflush(stdout);
-  ReadANN(r, "../../share/asr/spdatnet_sv.rtd");
-  ReadPhPrior(r, "../../share/asr/ph_prior_sv.txt");
+  ReadANN(r, "../share/spdatnet_sv.rtd");
+  ReadPhPrior(r, "../share/ph_prior_sv.txt");
     
   printf("configuring Viterbi decoder...\n"); fflush(stdout);
   r->vd = ViterbiDecoder_Create();
-  ReadGrammar(r, "../../share/asr/netsimple_sv", 1, 0);
+  ReadGrammar(r, "../share/netsimple_sv", 1, 0);
   ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
   Recognizer_SetLookahead(r, 3);
   //}
@@ -209,7 +209,7 @@ int main(int argc, char **argv) {
 
   while(1) {
     int exit=0;
-    printf("\n\nPress the following ker + enter to:\n  r: show results\n  e: get energy\n  t: show audio stream elapsed time\n  any other key: exit...\n"); fflush(stdout);
+    printf("\n\nPress the following key + enter to:\n  r: show results\n  e: get energy\n  t: show audio stream elapsed time\n  any other key: exit...\n"); fflush(stdout);
     ch = getchar(); getchar();
     switch(ch) {
     case 'r':
