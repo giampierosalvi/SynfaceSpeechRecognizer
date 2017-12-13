@@ -40,3 +40,10 @@ The NICO toolkit:
 cd ext
 make nico
 ```
+
+### Building the C code
+If you installed all the dependencies, your should be able to run:
+```
+cd src
+make
+```
