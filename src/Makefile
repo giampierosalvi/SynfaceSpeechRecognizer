@@ -9,9 +9,9 @@ modules = Audio.o Common.o FeatureExtraction.o Feedback.o LikelihoodGen.o \
 	nrg.o RecMath.o Recognizer.o RingBuffer.o SoundProc.o \
 	SoundSource_pa.o ViterbiDecoder.o
 
-tests = test_audio.o test_portaudio.o test_recognizer2.o test_recognizer.o
+tests = test_audio test_portaudio test_recognizer_live test_recognizer_offline
 
-all: librec.a
+all: librec.a $(tests)
 
 librec.a: $(modules) 
 	ar rv librec.a $(modules)
@@ -31,5 +31,5 @@ test_portaudio: test_portaudio.o
 clean:
 	rm -f *.o
 	rm -f librec.a
-
+	rm -f $(tests)
 
