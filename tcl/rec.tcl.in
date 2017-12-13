@@ -1,0 +1,585 @@
+#***************************************************************************
+#                          rec.tcl  -  description
+#                             -------------------
+#    begin                : Fri Jan 10 2003
+#    copyright            : (C) 2003 by Giampiero Salvi
+#    email                : giampi@speech.kth.se
+#***************************************************************************
+
+# This should be the main script for the package rec.
+# It sould maintain as independent as possible the different
+# parts:
+# - sound card
+# - feature extraction (and calibration tools)
+# - feedback
+# - neural network
+# - viterbi decoder
+# - scoring tools
+
+# Provides a tcl-tk package called rec. The functions are:
+#   rec::create r [<options>]
+#   r configure [<options>]
+#   r cget [<option>]
+#   r destroy
+# inherited from rec.dll:
+#   rec create
+#   r configure
+#   r start
+#   r stop
+
+package provide rec @VERSION@
+
+namespace eval rec {
+  variable Info
+  if {![info exists Info(Initialized)]} {
+    set Info(dir) [file dirname [info script]]
+    set Info(datadir) $Info(dir)
+    set Info(options) "-callback -decoder -ann -grammar -vt:lookahead -vt:gramfact -vt:insweight"
+    set Info(debug) 0
+    set Info(Initialized) 1
+    # here are the package defaults
+    set Info(callback)         "puts"
+    set Info(annFn)            "$Info(datadir)/data/spdatnet_sv.rtd"
+    set Info(grammar)          {}
+    set Info(phPriorFn)        "$Info(datadir)/data/ph_prior_sv.txt"
+    set Info(fisstatemap)      {}
+    set Info(gramfact)         1
+    set Info(insweight)       0
+    set Info(maxDelay)         0
+    set Info(simplexThreshold) 10e-3
+  }
+}
+
+source [file join $rec::Info(dir) mlf.tcl]
+source [file join $rec::Info(dir) fio.tcl]
+source [file join $rec::Info(dir) gram.tcl]
+source [file join $rec::Info(dir) display.tcl]
+
+proc rec::report {args} {
+  if {[lsearch [info commands] tk_messageBox] < 0} {
+    puts $args
+    flush stdout
+  } else {
+    tk_messageBox -message $args
+  }
+}
+proc rec::report {args} {}
+
+proc rec::create {w args} {
+  variable Info
+  namespace eval [namespace current]::$w {
+    variable data
+  }
+  upvar [namespace current]::${w}::data d
+  
+  # inherit defaults
+  set d(callback)         $Info(callback)
+  set d(annFn)            $Info(annFn)
+  set d(grammar)          $Info(grammar)
+  set d(fisstatemap)      $Info(fisstatemap)
+  set d(phPriorFn)        $Info(phPriorFn)
+  set d(gramfact)         $Info(gramfact)
+  set d(insweight)        $Info(insweight)
+  set d(maxDelay)         $Info(maxDelay)
+  set d(simplexThreshold) $Info(simplexThreshold)
+  # extra variables
+  set d(hasAnn) 0
+  set d(stopped) 1
+  set d(lastt) 0
+  set d(maxdt) 0
+  set d(mindt) 1000
+  set d(maxupdatet) 0
+  set d(minupdatet) 1000
+  set d(calibtemplate) {}
+  
+  # this does not load the net anymore
+  puts "rec.tcl: ...creating recognizer"
+  rec create $w.crec
+  
+  puts "rec.tcl: ...creating object command"
+  proc ::$w {cmd args} "return \[eval [namespace current]::invoke $w \$cmd \$args\]"
+  
+  puts "rec.tcl: ...configuring recognizer ($args)"
+  eval configure $w $args
+  
+  return $w
+}
+
+proc rec::destroy {w} {
+  $w.crec destroy
+  rename ::$w {}
+}
+
+proc rec::configure {w args} {
+  variable Info
+  upvar [namespace current]::${w}::data d
+  
+  #puts "rec::configure called with options $args"
+  if {[llength $args]==0} {
+    set res ""
+    foreach opt $Info(options) {
+      lappend res $opt [$w cget $opt]
+    }
+    return $res
+  }
+
+  # contruct options list
+  # if one of the options is -file read the config file and
+  # append the resulting options
+  set extargs [list]
+  foreach {opt val} $args {
+    if {$opt == "-file"} {
+      set fname [findfile $val]
+      if {$fname == ""} {
+	error "File $val not found"
+      }
+      set fh [open $fname r]
+      foreach el [string trim [read $fh]] {
+	lappend extargs $el
+      }
+      close $fh
+    } else {
+      lappend extargs $opt $val
+    }
+  }
+
+  # this is to make sure a neural network is configured
+  # I'm not sure it is still necessary
+  if {! $d(hasAnn)} {
+    set argshaveann 0
+    foreach {opt val} $extargs {
+      if {$opt == "-ann"} {
+	set argshaveann 1
+      }
+    }
+    if {! $argshaveann} {
+#      puts "Cannot configure without defining a neural network"
+#      return
+      error "Cannot configure without defining a neural network"
+    }
+  }
+  
+  foreach {opt val} $extargs {
+    switch -- $opt {
+      -callback {
+	set d(callback) $val
+      }
+      -ann {
+	set fname [findfile $val]
+	if {$fname == ""} {
+	  error "File $val not found"
+	}
+	set d(annFn) $fname
+	set fp [open $fname r]
+	fconfigure $fp -translation binary
+	set net [read $fp]
+	close $fp
+	$w.crec configure -ann $net
+	# $w.crec configure -ann $d(annFn)
+	set d(hasAnn) 1
+      }
+      -phprior {
+	set fname [findfile $val]
+	if {$fname == ""} {
+	  error "File $val not found"
+	}
+	set d(phPriorFn) $fname
+	$w.crec configure -phprior [readTextVector $fname]
+      }
+      -decoder {
+	if {$val == "map"} {
+	  set d(grammar) {}
+	}
+	$w.crec configure -decoder $val
+      }
+      -vt:grambasename {
+	set grmfns [list]
+	foreach fn [list ${val}.transmat ${val}.prior ${val}.map] {
+	  set fname [findfile $fn]
+	  if {$fname == ""} {
+	    error "File $fn not found"
+	  }
+	  lappend grmfns $fname
+	}
+	set d(grammar) $grmfns
+	loadgram $w $grmfns
+      }
+      -grammar {
+	#puts "vit.tcl: ...configure -grammar"
+	if {[llength $val] != 3} {
+	  error "-grammar \{transmat stateprior fisstatemap\}"
+	}
+	set d(grammar) $val
+	loadgram $w $val
+      }
+      -vt:lookahead {
+	set d(maxDelay) $val
+	$w.crec configure -vt:lookahead $val
+      }
+      -vt:gramfact {
+	set d(gramfact) $val
+	if {$d(grammar)!={}} {loadgram $w $d(grammar)}
+      }
+      -vt:insweight {
+	set d(insweight) $val
+	if {$d(grammar)!={}} {loadgram $w $d(grammar)}
+      }
+      -simplexthreshold {
+	set d(simplexThreshold) $val
+	$w.crec configure $opt $val
+      }
+      -calibtemplate {
+        set d(calibtemplate) [readTextVector $val]
+	$w.crec configure -calibtemplate $d(calibtemplate)
+      }
+      default {
+	if [catch {
+	  $w.crec configure $opt $val
+	}
+	   ] {
+	  error "unknown option \"$opt\""
+	}
+      }
+    }
+  }
+}
+
+proc rec::cget {w opt} {
+  upvar [namespace current]::${w}::data d
+  #  variable Info
+  
+  switch -- $opt {
+    -callback {
+      return $d(callback)
+    }
+    -ann {
+      return $d(annFn)
+    }
+    -grammar {
+      return $d(grammar)
+    }
+    -phprior {
+      return $d(phPriorFn)
+    }
+    -map {
+      return $d(fisStateFn)
+    }
+    -vt:lookahead {
+      return $d(maxDelay)
+    }
+    -vt:gramfact {
+      return $d(gramfact)
+    }
+    -vt:insweight {
+      return $d(insweight)
+    }
+    -simplexthreshold {
+      return $d(simplexThreshold)
+    }
+    -calibtemplate {
+      return $d(calibtemplate)
+    }
+    -indev {
+      return [$w.crec configure -indev]
+    }
+    -outdev {
+      return [$w.crec configure -outdev]
+    }
+    default {
+      if [catch {
+	$w.crec configure $opt
+      }
+	 ] {
+	error "unknown option \"$opt\""
+      }
+    }
+  }
+}
+
+proc rec::invoke {w cmd args} {
+
+  set ns [namespace current]
+  if {[info command ${ns}::$cmd]!=""} {
+    set res [eval uplevel [list ${ns}::$cmd $w $args]]
+  } else {
+    set res [eval uplevel [list $w.crec $cmd $args]]
+  }
+  return $res
+}
+
+# check if file exists (in case appending datasir)
+proc rec::findfile {fname} {
+  variable Info
+  if [file exists $fname] {
+    return $fname
+  }
+  # not found (try in datadir)
+  set fname [file join $Info(datadir) $fname]
+  if [file exists $fname] {
+    return $fname
+  }
+  # still not found
+  return ""
+}
+
+# rec::getdevinfo: returns information about audio device -all
+#proc rec::getdevinfo {w idx arg} {
+#  set tmpres [$w.crec getdevinfo $idx]
+#  if {$arg == "-all"} {
+#    return $tmpres
+#  }
+#  array set a $tmpres
+#  return $a($arg)
+#}
+
+proc rec::createCalibItem {w wid chan spvar silvar minspeech maxsil} {
+  set width 300
+  #set spvar 0
+  #set silvar 0
+  set boldfont [font create -weight bold -size 8]
+  set normalfont [font create -weight normal -size 8]
+  frame $wid.ctrl
+  frame $wid.ctrl.disp
+  set disp $wid.ctrl.disp
+  canvas $disp.m -width 150 -height 100
+  createMeter $disp.m $minspeech $maxsil
+  frame $wid.ctrl.but
+  set but $wid.ctrl.but
+  #  button $but.b0 -foreground red -font $normalfont \
+      #    -text "speech calibration" \
+      #    -command [namespace code [list after 3000 [namespace code \
+      #    [list updateSpeechEnergy $w $chan $disp.m $spvar]]]]
+  button $but.b0 -foreground red -font $normalfont \
+      -text "speech calibration" \
+      -command [namespace code \
+		    [list speechButtonCallback $but.b0 $w $chan $disp.m $spvar]]
+  pack $but.b0
+  message $but.v0 -width $width -font $normalfont -textvariable $spvar
+  pack $but.v0
+  #  button $but.b1 -foreground blue -font $normalfont \
+      #    -text "silence calibration" \
+      #    -command [namespace code [list after 3000 \
+      #    [namespace code [list updateSilEnergy $w $chan $disp.m $silvar]]]]
+  puts "about the create sil button"
+  button $but.b1 -foreground blue -font $normalfont \
+      -text "silence calibration" \
+      -command [namespace code \
+		    [list silButtonCallback $but.b1 $w $chan $disp.m $silvar]]
+  pack $but.b1
+  message $but.v1 -width $width -font $normalfont -textvariable $silvar
+  pack $but.v1
+  pack $but $disp -side left -expand true -fill x
+  pack $wid.ctrl
+
+}
+
+proc rec::speechButtonCallback {b w chan m var} {
+  $b configure -state disable
+  after 3000 [namespace code [list updateSpeechEnergy $b $w $chan $m $var]]
+}
+
+proc rec::silButtonCallback {b w chan m var} {
+  $b configure -state disable
+  after 3000 [namespace code [list updateSilEnergy $b $w $chan $m $var]]
+}
+
+proc rec::destroyCalibTool {w} {
+ # how do we destroy the window?
+}
+
+proc rec::updateThEnergy {w meter which} {
+  #  upvar [namespace current]::${w}::data($which) var
+  upvar [namespace current]::${w}::data d
+  #  variable Info
+  set d($which) [expr ($d(speechEnergyLocal)+$d(silEnergyLocal))/2]
+  set d(simplexThreshold) [expr pow(10, $d($which))]
+  configureMeter $meter $which $d($which)
+}
+
+proc rec::updateSilEnergy {b w channel meter var} {
+
+  set $var [expr 10*log10([$w getavenergy $channel 300])]; 
+  configureMeter $meter silence $$var
+  $b configure -state normal
+}
+
+proc rec::updateSpeechEnergy {b w channel meter var} {
+  
+  set $var [expr 10*log10([$w getavenergy $channel 300])]; 
+  configureMeter $meter speech $$var
+  $b configure -state normal
+}
+
+# w:       recognizer object
+# channel: left (0) right (1)
+# meter:   meter object to update
+# which:   both tag of the meter line and name of the variable holding
+#          the value can be [speech,sil]Energy[Remote,Local]
+proc rec::updateEnergy {w channel meter which} {
+  upvar [namespace current]::${w}::data($which) var
+  
+  # note the $ because is a vraiable reference
+  set var [expr 10*log10([$w getavenergy $channel 300])]; 
+  configureMeter $meter $which $var
+}
+
+# note the inversion in the channels: 0 corresponds to y and 1 to x (!!!)
+proc rec::getavenergy {w channel n} {
+  if {$channel == 0} {
+    return [$w getyavenergy $n]
+  } else {
+    return [$w getxavenergy $n]
+  }
+}
+
+proc rec::createMeter {m minspeech maxsil} {
+  
+  if {$minspeech < $maxsil} {
+    set minspeech -30
+    set maxsil -55
+  }
+  set x 40
+  set xx [expr $x+20]
+  set y 10
+  set yy1 [expr $y-$minspeech]
+  set yy2 [expr $y-$maxsil]
+  set yy3 [expr $y+80]
+  $m create rectangle $x $y $xx $yy1 -fill gray70 -width 0
+  $m create rectangle $x $yy1 $xx $yy2 -fill gray80 -width 0
+  $m create rectangle $x $yy2 $xx $yy3 -fill gray60 -width 0
+  $m create rectangle $x $y $xx $yy3
+  $m create text [expr $x-7] [expr $y-5] -anchor ne -text "0 dB"
+  $m create text [expr $x-7] [expr $yy3-5] -anchor ne -text "-80 dB"
+  for {set i 10} {$i <100} {incr i 10} {
+    $m create line [expr $x-5] $i $x $i
+  }
+  $m create text [expr $xx+5] 20 -anchor nw -text "speech region"
+  $m create text [expr $xx+5] 70 -anchor nw -text "slience region"
+  $m create line [expr $x-5] 10 [expr $xx+5] 10 -width 0 \
+	  -fill red -tags speech
+  $m create line [expr $x-5] 10 [expr $xx+5] 10 -width 0 \
+      -fill blue -tags silence
+  pack $m
+  
+}
+
+# now which is either speech or silence
+proc configureMeter {m which level} {
+  set level [expr int([expr -$level+10])]
+  set coo [$m coords $which]
+  set coo [list [lindex $coo 0] $level [lindex $coo 2] $level]
+  $m coords $which $coo
+  $m itemconfigure $which -width 2
+}
+
+# not used anymore
+proc rec::calibrate {w} {
+  upvar [namespace current]::${w}::data d
+  
+  set E 0
+  for {set i 0} {$i < 300} {incr i} {
+    
+    set E [expr $E + [$w.crec getenergy]]
+  }
+  set E [expr 10*log10($E/300)]
+  
+  return $E
+}
+
+# this is the part related with the (optional) Viterbi decoder
+# I tried to do as much of the file reading and parsing in Tcl
+# to be portable, but since I had already some parts of the data
+# acquisition implemented in C, those are recycled (hope this
+# does not confuse)
+# proc rec::createViterbi {w} {
+#   upvar [namespace current]::${w}::data d
+#   # load transmat
+#   set transmat [vdLoadTransmat $w]
+#   # load stprior
+#   set data [readTextVector $d(stPriorFn)]
+#   foreach dd $data {
+#     if {$dd == "Inf"} {
+#       lappend stprior Ninf
+#     } else {
+#       lappend stprior -$dd
+#     }
+#   }
+#   # load phprior
+#   set phprior [readTextVector $d(phPriorFn)]
+#   # load fisstateid
+#   set data [readTextVector $d(fisStateFn)]
+#   foreach dd $data { lappend fisstateid [expr $dd-1] }
+#   # create viterbi decoder
+#   $w.crec createviterbi $transmat $stprior $phprior $fisstateid $d(maxDelay) $d(grammarFactor)
+# }
+
+# loadgram - loads all grammar definition files
+proc rec::loadgram {w filelist} {
+  upvar [namespace current]::${w}::data d
+  set transmatFn [lindex $filelist 0]
+  set statepriorFn [lindex $filelist 1]
+  set fisstatemapFn [lindex $filelist 2]
+  
+  # note: we only have the grammar factor here (fix perhaps?)
+  set transmat [gram::parsetransmat [fio::readdata $transmatFn] $d(gramfact) $d(insweight)]
+  set stateprior [gram::parsestprior [fio::readdata $statepriorFn]]
+  set fisstatemap [gram::parsefisstateid [fio::readdata $fisstatemapFn]]
+  # check consistency
+  set d(fisstatemap) $fisstatemap
+  $w.crec configure -grammar [list $transmat $stateprior $fisstatemap]
+}
+
+proc rec::readTextVector {fname} {
+  set fp [open $fname r]
+  
+  set data [split [string trim [read $fp]] "\n"]
+  close $fp
+  
+  return $data
+}
+
+# the file format is:
+# - one transition for each line in the from:
+# from to weight type
+# - the values are inverted and the grammar factor
+# is added to the grammar kind weights 
+# proc rec::vdLoadTransmat {w} {
+#   upvar [namespace current]::${w}::data d
+  
+#   foreach data [readTextVector $d(transmatFn)] {
+#     set els [split [string trim $data] " "]
+#     # -1 converts from matlab to C style indexes
+#     lappend from   [expr [lindex $els 0]-1]
+#     lappend to     [expr [lindex $els 1]-1]
+#     set tmptype [lindex $els 3]
+#     lappend type $tmptype
+#     set tmpw [lindex $els 2]
+#     if {$tmpw == "Inf"} {
+#       set tmpw "Ninf"
+#     } else {
+#       set tmpw -$tmpw
+#       if {$tmptype == 1} {
+# 	set tmpw [expr $tmpw+$d(grammarFactor)]
+#       }
+#     }
+#     lappend weight $tmpw
+#   }
+  
+#   #  $w.crec acquiretransmat $from $to $weight $type
+#   return [list $from $to $weight $type]
+# }
+
+# utility procedures
+
+if {[info tclversion] >= 8.3} {
+  proc rec::timestamp {} {clock clicks -milliseconds}
+} else {
+  switch $::tcl_platform(platform) {
+    windows {
+      proc rec::timestamp {} {clock clicks}
+    }
+    unix {
+      proc rec::timestamp {} {expr {[clock clicks]/1000}}
+    }
+  }
+}
