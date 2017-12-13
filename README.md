@@ -1,7 +1,8 @@
 # SynfaceSpeechRecognizer
-Speech recognizer for the Synface project
+Speech recognizer for the Synface project. The recognizer uses recurrent neural networks (RNNs) to classify speech into phonetic classes. Special care has been put to ensure real-time processing and especially **low latency**.
 
-## Main publications
+
+### Main publications
 **Dynamic behaviour of connectionist speech recognition with strong latency constraints**  
 *Giampiero Salvi*  
 Speech Communication, 48(7), 802-818  
