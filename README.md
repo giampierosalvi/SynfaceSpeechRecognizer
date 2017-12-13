@@ -19,3 +19,22 @@ The Synface application uses speech recognition to animate a synthetic face in r
 ![alt text](https://github.com/giampierosalvi/SynfaceSpeechRecognizer/blob/master/doc/synface_architecture.png "Synface Architecture")
 
 The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface](http://www.speech.kth.se/synface/) projects was to use this technology to improve telephone communication for hearing impaired persons. The technology has been commercialized between 2006 and 2016 by the Swedish company Synface AB. It is now used as a software module in [Furhat Robotics](https://www.furhatrobotics.com/). The blocks with colored background are implemented by the code in this repository.
+
+## Instructions
+The code can be built on GNU/Linux, Windows (mingw) and Mac. The following instructions are for Ubuntu GNU/Linux. CMake files with cross platform build instructions may be added in the future.
+
+The code is divided into the following parts:
+* `src`: C files defining the recognizer
+* `ext`: external dependecies
+* `tcl`: extensions to build a Tcl package
+* `share`: model and configuration files for a number of languages
+
+### Dependencies
+The code depends on portaudio:  
+```sudo apt instal portaudio19-dev```
+
+The NICO toolkit:
+```
+cd ext
+make nico
+```
