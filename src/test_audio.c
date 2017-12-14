@@ -29,8 +29,8 @@ int TestCallback(void *dummy, short *speech, int num_samples) {
   return 0;
 }
 
-void mypause() {
-  printf("Press [Enter] to continue . . .");
+void waitForEnter() {
+  printf("Press [Enter] for next step . . .");
   fflush(stdout);
   getchar();
 
@@ -40,6 +40,9 @@ int main(int argc, char **argv) {
   int err;
   SoundSource *s = SoundSource_Create();
 
+
+  fprintf(stderr, " --------- AUDIO PLAYBACK TEST -------------\n");
+  fprintf(stderr, " --> Setting up audio callback -------------\n");
   // setting sound source callback
   err = SoundSource_SetCallback(s, (SoundSourceCallbackProc *) &TestCallback, NULL);
   if(err != 0) {
@@ -47,45 +50,54 @@ int main(int argc, char **argv) {
     return err;
   }
 
+  fprintf(stderr, " --> Opening audio stream with default values\n");
   err = SoundSource_Open(s, NULL, 0); //char *device, SMPRATE);
   if(err != 0) {
     fprintf(stderr, "failed opening device\n");
     return err;
   }
 
+  fprintf(stderr, " --> Starting audio stream -----------------\n");
   err = SoundSource_Start(s);
   if(err != 0) {
     fprintf(stderr, "failed starting stream\n");
     return err;
   }
+  fprintf(stderr, " --> You should hear your voice with minimal delay\n");
 
-  mypause();
+  waitForEnter();
 
-  printf("Setting playback delay to half a second...\n");
+  printf("--> Setting playback delay to half a second...\n");
   SoundSource_Stop(s);
   SoundSource_SetFBDelay(s, 0.5);
   SoundSource_Start(s);
+  fprintf(stderr, " --> Now, you should hear your voice with some delay\n");
 
-  mypause();
+  waitForEnter();
 
-  printf("Setting playback delay to one second...\n");
+  printf("--> Setting playback delay to one second...\n");
   SoundSource_Stop(s);
   SoundSource_SetFBDelay(s, 1.0);
   SoundSource_Start(s);
+  fprintf(stderr, " --> Now, you should hear your voice with more delay\n");
 
-  mypause();
+  waitForEnter();
 
-  printf("Setting playback delay back to zero...\n");
+  printf("--> Setting playback delay back to zero...\n");
   SoundSource_Stop(s);
   SoundSource_SetFBDelay(s, 0.0);
   SoundSource_Start(s);
+  fprintf(stderr, " --> Now, you should hear your voice with minimal delay, again\n");
 
-  mypause();
+  waitForEnter();
 
+  fprintf(stderr, " --> Closing down\n");
   SoundSource_Stop(s);
   SoundSource_Close(s);
   // cleaning up
   SoundSource_Free(&s);
+
+  fprintf(stderr, " --------- AUDIO PLAYBACK TEST ENDED --------\n");
 
   return 0;
 }
