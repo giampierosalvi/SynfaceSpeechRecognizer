@@ -166,16 +166,19 @@ int main(int argc, char **argv) {
 
   //mtrace();
 
-  printf("initializing PortAudio...\n");
+  printf("--------- PORTAUDIO TEST -----------------------\n");
+  printf("--> initializing PortAudio...\n");
   Pa_Initialize();
 
+  printf("--> opening and closing default stream ten times...\n");
   for(i=0;i<10;i++) {
-    printf("opening stream...\n");
+    printf("--> opening stream...\n");
     open_stream(&stream);
-    printf("closing stream...\n");
+    printf("--> closing stream...\n");
     close_stream(stream);
   }
 
+  printf("--> opening, starting, stopping and closing default stream five times...\n");
   for(i=0;i<5;i++) {
     printf("opening stream...\n");
     open_stream(&stream);
@@ -189,9 +192,10 @@ int main(int argc, char **argv) {
     close_stream(stream);
   }
 
-  printf("terminating PortAudio...\n");
+  printf("--> terminating PortAudio...\n");
   Pa_Terminate();
 
+  printf("--------- PORTAUDIO TEST ENDED ----------------\n");
   //muntrace();
 
   return 0;
