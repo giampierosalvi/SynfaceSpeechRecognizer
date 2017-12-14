@@ -1,7 +1,7 @@
 CC	= gcc
 OPT	= -O -ffast-math 
 #CFLAGS	= $(OPT) -Wall -I../ext/nico-1.1.2/lib/
-CFLAGS	= $(OPT) -Wall -I../ext/nico/
+CFLAGS	= $(OPT) -Wall -I../ext/nico/ # -D DEBUG
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L../ext/nico/
 LDLIBS = -lportaudio -lnico -lm
 

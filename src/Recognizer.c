@@ -95,8 +95,8 @@ Recognizer *Recognizer_Create(int useSoundSource) {
     SoundSource_SetCallback(r->s, (SoundSourceCallbackProc *) &Recognizer_PushSpeech,
 			    (void *) r);
   }
-  /* This is created (in case) from the Tcl part */
-  r->vd = NULL;
+  /* We create this in any case, even if it's not used */
+  r->vd = ViterbiDecoder_Create();
 
   /* result queue */
   DBGPRINTF("allocating result queue\n");

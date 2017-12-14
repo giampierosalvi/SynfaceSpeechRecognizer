@@ -1,5 +1,5 @@
 /***************************************************************************
-                          test_recognizer.c  -  description
+                          test_recognizer_live.c  -  description
                              -------------------
     begin                : Mon Dec 10 2012
     copyright            : (C) 2012-2017 by Giampiero Salvi

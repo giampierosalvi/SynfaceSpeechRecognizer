@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#if 1
+#if DEBUG
 #define DBGPRINTF(format, args...) {fprintf(stderr, "%s: ", __func__); fprintf(stderr,format, ## args);}
 #define DBGPRINTF2(format, args...) {fprintf(stderr,format, ## args);}
 #else
