@@ -1,8 +1,8 @@
 /***************************************************************************
-                          Common.h  -  description
+                         Recognizer.h  -  description
                              -------------------
-    begin                : Mon Feb 27 2006
-    copyright            : (C) 2006-2017 by Giampiero Salvi
+    begin                : Tue May 13 2003
+    copyright            : (C) 2003-2017 by Giampiero Salvi
     email                : giampi@kth.se
 
     This program is free software: you can redistribute it and/or modify
@@ -20,20 +20,17 @@
 
  ***************************************************************************/
 
-#ifndef _COMMON_H_
-#define _COMMON_H_
+#ifndef _CONFIGURATION_H_
+#define _CONFIGURATION_H_
 
-/* just for debugging */
-#include <string.h>
-#include <stdio.h>
+#include "Recognizer.h"
+#include "SoundSource.h"
+#include "SoundProc.h"
+#include "FeatureExtraction.h"
+#include "LikelihoodGen.h"
+#include "ViterbiDecoder.h"
 
-#if DEBUG
-#define DBGPRINTF(format, args...) {fprintf(stderr, "%s: ", __func__); fprintf(stderr,format, ## args);}
-#define DBGPRINTF2(format, args...) {fprintf(stderr,format, ## args);}
-#else
-#define DBGPRINTF(format,args...) ;
-#define DBGPRINTF2(format,args...) ;
-#endif
+int Configuration_ApplyConfigFile(char *filename, Recognizer *r);
 
-#endif /* _COMMON_H_ */
 
+#endif /* _CONFIGURATION_H_ */

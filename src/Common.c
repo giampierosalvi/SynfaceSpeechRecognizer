@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 27 2006
     copyright            : (C) 2006-2017 by Giampiero Salvi
-    email                : giampi@speech.kth.se
+    email                : giampi@kth.se
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
