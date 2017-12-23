@@ -24,8 +24,8 @@
 #include "Common.h"
 
 /* utilities */
-int **AllocPsi(int nTrans, int backTrackLen);
-int FreePsi(int **psi, int nTrans);
+int **AllocPsi(int nStates, int backTrackLen);
+int FreePsi(int **psi, int nStates);
 
 /* this is limited because we need to know the size of
    the recognition network to allocate the decoder data.
@@ -37,7 +37,7 @@ ViterbiDecoder *ViterbiDecoder_Create() {
 
   /* set defaults, just to be picky */
   vd->hasPrior = 0;
-  vd->nTrans = 0;
+  vd->nStates = 0;
   vd->maxDelay = 0;
   vd->backTrackLen = vd->maxDelay+1;
   vd->relT = 0;
@@ -117,18 +117,18 @@ int ViterbiDecoder_FreeGrammar(ViterbiDecoder *vd) {
   }
   if(vd->psi != NULL) {
     DBGPRINTF("vd->psi not NULL, freing...\n");
-    FreePsi(vd->psi,vd->nTrans); vd->psi = NULL;
+    FreePsi(vd->psi,vd->nStates); vd->psi = NULL;
   }
   //DBGPRINTF("free vd->psi\n");
-  //if(vd->psi != NULL) FreePsi(vd->psi,vd->nTrans);
-			//  for(i=0;i<vd->nTrans;i++) 
+  //if(vd->psi != NULL) FreePsi(vd->psi,vd->nStates);
+			//  for(i=0;i<vd->nStates;i++) 
 			//if(vd->psi[i]!=NULL) free(vd->psi[i]);
 			//free(vd->psi);
   if(vd->tempPath != NULL) {
     DBGPRINTF("vd->tempPath not NULL, freing...\n");
     free(vd->tempPath); vd->tempPath = NULL;
   }
-  vd->nTrans = 0;
+  vd->nStates = 0;
 
   DBGPRINTF("return\n");
   return 0;
@@ -139,7 +139,7 @@ int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int stat
   int statesPerModel = statesPerPhone+1;
   int nStates = nPhones * statesPerModel;
   /* temporary variables for transitions */
-  int nTrans, *from, *to, *kind, *state2phone=0;
+  int nTrans, *from, *to, *kind;
   LogFloat *weight;
    /* current phone, state and transition number */
   int ph, st, tr, j;
@@ -148,29 +148,35 @@ int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int stat
   /* left-to-right model for each phone + connecting transitions */
   nTrans = nPhones * statesPerPhone * 2 + nPhones*nPhones;
 
-  DBGPRINTF("freing previous grammar\n");
+  DBGPRINTF("freing previous grammar...\n");
   ViterbiDecoder_FreeGrammar(vd);
 
-  /* creating state prior */
+  DBGPRINTF("creating state prior...\n");
   vd->stPrior = CreateVector(nStates);
-  for(ph=0; ph<nPhones; ph++)
+  for(ph=0; ph<nPhones; ph++) {
+    fprintf(stderr, "[%d]", ph); fflush(stdout);
     vd->stPrior->data[ph*statesPerModel] = phoneTransWeight;
+  }
+  fprintf(stderr, "\n"); fflush(stdout);
 
-  /* creating state to phone mapping */
+  DBGPRINTF("creating state to phone mapping...\n");
   vd->fisStateId = CreateIntVector(nStates);
-  for(st=0; st<nStates; st++)
+  for(st=0; st<nStates; st++) {
+    fprintf(stderr, "[%d]", st); fflush(stdout);
     vd->fisStateId->data[st] = st/statesPerModel;
+  }
+  fprintf(stderr, "\n"); fflush(stdout);
   
-  /* create transitions */
+  DBGPRINTF("creating transitions...\n");
   from = (int *) malloc(nTrans*sizeof(int));
   to = (int *) malloc(nTrans*sizeof(int));
   kind = (int *) malloc(nTrans*sizeof(int));
   weight = (LogFloat *) malloc(nTrans*sizeof(LogFloat));
   
+  DBGPRINTF("computing transitions...\n");
   st=0; tr=0;
   for(ph=0; ph<nPhones; ph++) {
     for(j=0; j<statesPerPhone; j++) {
-      state2phone[st] = ph;
       /* self transition */
       from[tr] = st;
       to[tr] = st;
@@ -184,22 +190,25 @@ int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int stat
       weight[tr] = NEXT_TRANSITION_WEIGHT;
       tr++; st++;
     }
-    state2phone[st] = ph;
     /* "grammar" transitions */
     for(j=0; j<nPhones; j++) {
       from[tr] = st;
-      to[tr] = j*(statesPerModel);
+      to[tr] = j*statesPerModel;
       kind[tr] = GRAMMAR_TRANSITION;
       weight[tr] = phoneTransWeight;
       tr++;
     }
+    st++;
+    fprintf(stderr, "[%d]", tr); fflush(stdout);
   }
+  fprintf(stderr, "\n"); fflush(stdout);
   
-  DBGPRINTF("creating new grammar structures\n");
+  DBGPRINTF("creating new grammar structures...\n");
   vd->transmat = CreateSparseMatrixWithData(from, to, weight, kind, nTrans);
-  vd->nTrans = nTrans;
+  vd->nStates = nStates;
 
   /* free temporary structures */
+  DBGPRINTF("freing temporary structures...\n");
   free(from);
   free(to);
   free(weight);
@@ -207,8 +216,8 @@ int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int stat
 
   /* viterbi variables */
   DBGPRINTF("creating Viterbi temp variables\n");
-  vd->delta = (LogFloat *) malloc(vd->nTrans * sizeof(LogFloat));
-  vd->preDelta = (LogFloat *) malloc(vd->nTrans * sizeof(LogFloat));
+  vd->delta = (LogFloat *) malloc(vd->nStates * sizeof(LogFloat));
+  vd->preDelta = (LogFloat *) malloc(vd->nStates * sizeof(LogFloat));
   /* allocates and sets psi and tempPath to 0 */
   ViterbiDecoder_SetLookahead(vd,vd->maxDelay);
   /* this forces computing prior (first file t=0) */
@@ -227,10 +236,10 @@ int ViterbiDecoder_SetGrammar(ViterbiDecoder *vd, SparseMatrix *transmat,
   //DisplaySparseMatrix(transmat);
   vd->stPrior = stPrior;
   vd->fisStateId = fisStateId;
-  vd->nTrans = vd->transmat->ncols;
+  vd->nStates = vd->transmat->ncols;
   /* viterbi variables */
-  vd->delta = (LogFloat *) malloc(vd->nTrans * sizeof(LogFloat));
-  vd->preDelta = (LogFloat *) malloc(vd->nTrans * sizeof(LogFloat));
+  vd->delta = (LogFloat *) malloc(vd->nStates * sizeof(LogFloat));
+  vd->preDelta = (LogFloat *) malloc(vd->nStates * sizeof(LogFloat));
   /* allocates and sets psi and tempPath to 0 */
   ViterbiDecoder_SetLookahead(vd,vd->maxDelay);
   /* this forces computing prior (first file t=0) */
@@ -244,20 +253,20 @@ int ViterbiDecoder_SetLookahead(ViterbiDecoder *vd, int lookahead) {
 
   if(vd == NULL || lookahead < 0) return 0;
 
-  DBGPRINTF("vd->nTrans=%d, vd->backTrackLen=%d, lookahead=%d\n", vd->nTrans, vd->backTrackLen, lookahead);
+  DBGPRINTF("vd->nStates=%d, vd->backTrackLen=%d, lookahead=%d\n", vd->nStates, vd->backTrackLen, lookahead);
   vd->maxDelay = lookahead;
   vd->backTrackLen = lookahead+1;
   if(vd->psi != NULL) {
     DBGPRINTF("vd->psi not NULL, freing\n");
-    FreePsi(vd->psi,vd->nTrans); vd->psi=NULL;
+    FreePsi(vd->psi,vd->nStates); vd->psi=NULL;
   }
   if(vd->tempPath != NULL) {
     DBGPRINTF("vd->tempPath not NULL, freing\n");
     free(vd->tempPath); vd->tempPath = NULL;
   }
-  if(vd->nTrans != 0) {
-    DBGPRINTF("before malloc vd->psi (nTrans = %d, backTrackLen = %d)\n",vd->nTrans, vd->backTrackLen);
-    vd->psi = AllocPsi(vd->nTrans,vd->backTrackLen);
+  if(vd->nStates != 0) {
+    DBGPRINTF("before malloc vd->psi (nStates = %d, backTrackLen = %d)\n",vd->nStates, vd->backTrackLen);
+    vd->psi = AllocPsi(vd->nStates,vd->backTrackLen);
   }
   DBGPRINTF("before malloc vd->tempPath\n");
   vd->tempPath = (int *) malloc(vd->backTrackLen*sizeof(int));
@@ -272,7 +281,7 @@ int ViterbiDecoder_Reset(ViterbiDecoder *vd) {
   int i; //,j;
   //LogFloat *preDelta = vd->preDelta;
   //  Vector   *stPrior    = rec->stPrior;
-  //int       nTrans   = vd->nTrans;
+  //int       nStates   = vd->nStates;
 
   vd->relT = 0;
   vd->totMaxDelta = NINF;
@@ -284,23 +293,23 @@ int ViterbiDecoder_Reset(ViterbiDecoder *vd) {
   memset(vd->tempPath,0,vd->backTrackLen*sizeof(int));
   //  for(j=0;j<vd->backTrackLen;j++) {
     //vd->tempPath[j] = 0;
-  for(i=0;i<vd->nTrans;i++)
+  for(i=0;i<vd->nStates;i++)
     memset(vd->psi[i],0,vd->backTrackLen*sizeof(int));
     //  vd->psi[i][j] = 0;
 
   /* this should not be needed, but just to be sure...
      make sure that 0 is a good initialization */
-  //memset(vd->preDelta, 0, vd->nTrans*sizeof(float));
-  //memset(vd->delta, 0, vd->nTrans*sizeof(float));
+  //memset(vd->preDelta, 0, vd->nStates*sizeof(float));
+  //memset(vd->delta, 0, vd->nStates*sizeof(float));
 
   return 1;
 }
 
-int BestDeltaIdx(LogFloat *delta, int nTrans) {
+int BestDeltaIdx(LogFloat *delta, int nStates) {
   int i,maxidx=-1;
   LogFloat max=NINF;
 
-  for(i=0;i<nTrans;i++)
+  for(i=0;i<nStates;i++)
     if(isinf(delta[i]) != -1 && delta[i]>max) {
       max = delta[i];
       maxidx = i;
@@ -322,7 +331,7 @@ int BackTrack(ViterbiDecoder *vd) {
   int maxDelay = vd->maxDelay;
 /*int checkLen = 0;*/
 
-  vd->tempPath[relT] = BestDeltaIdx(vd->delta, vd->nTrans);
+  vd->tempPath[relT] = BestDeltaIdx(vd->delta, vd->nStates);
   for(t=relT-1;t>relT-maxDelay;t--) {
 /*checkLen++;*/
     relBt = Mod(t,backTrackLen); relBtp1 = Mod(t+1,backTrackLen);
@@ -353,15 +362,15 @@ int BackTrack(ViterbiDecoder *vd) {
   for(t=relT;t>relT-maxDelay;t--) {
     trel = Mod(t,backTrackLen);
     trelprev = Mod(t-1,backTrackLen);
-    if(vd->tempPath[trel]<0 || vd->tempPath[trel]>=vd->nTrans) {
+    if(vd->tempPath[trel]<0 || vd->tempPath[trel]>=vd->nStates) {
       DBGPRINTF( "panic! vd->tempPath[%d] = %d [%d,%d], "
-		 "setting to 0\n", trel, vd->tempPath[trel], 0, vd->nTrans);
+		 "setting to 0\n", trel, vd->tempPath[trel], 0, vd->nStates);
       vd->tempPath[trel] = 0;
     }
     prevIdx = vd->psi[vd->tempPath[trel]][trel];
-    if(prevIdx<0 || prevIdx>=vd->nTrans) {
+    if(prevIdx<0 || prevIdx>=vd->nStates) {
       DBGPRINTF("panic! prevIdx=%d [%d,%d], setting to 0\n",
-	      prevIdx, 0, vd->nTrans);
+	      prevIdx, 0, vd->nStates);
       prevIdx=0;
     }
     /* stop backtrack because the rest of the path is the same */
@@ -418,7 +427,7 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
   /* first time use prior to define the first
      psi (not extremely important in real-time app) */
   if(!vd->hasPrior) { /* prior evaluation */
-    for(to=0;to<vd->nTrans;to++) {
+    for(to=0;to<vd->nStates;to++) {
       obs = obslik[vd->fisStateId->data[to]];
       //DBGPRINTF("stPrior[%d] = %f, obs = %f\n", i,vd->stPrior->data[to],obs);
       //if(isinf(vd->stPrior->data[to]) == -1 || isinf(obs) == -1)
@@ -428,12 +437,12 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
       /* r->psi[i][t] = -1; I leave it to 0 (trick to handle first file) */
     }
     //DBGPRINTF("prior: obs =");
-    //for(i=0;i<vd->nTrans;i++) {
+    //for(i=0;i<vd->nStates;i++) {
     //  DBGPRINTF(" %f",obslik[vd->fisStateId->data[i]]);
     //}
     //DBGPRINTF("\n");
     //DBGPRINTF("prior: preDelta =");
-    //for(i=0;i<vd->nTrans;i++) {
+    //for(i=0;i<vd->nStates;i++) {
     //  DBGPRINTF(" %f",vd->preDelta[i]);
     //}
     //DBGPRINTF("\n");
@@ -445,7 +454,7 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
   /* Viterbi step */
   /* update relative time */
   vd->relT++; vd->relT = Mod(vd->relT,vd->backTrackLen);
-  for(to=0;to<vd->nTrans;to++) {
+  for(to=0;to<vd->nStates;to++) {
     maxval = NINF; maxfrom = -1; /* could be anything */
     obs = obslik[vd->fisStateId->data[to]];
     if(isinf(obs) == -1) {
@@ -470,12 +479,12 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
     }
   }
   //DBGPRINTF("obs =");
-  //for(i=0;i<vd->nTrans;i++) {
+  //for(i=0;i<vd->nStates;i++) {
   //  DBGPRINTF(" %f",obslik[vd->fisStateId->data[i]]);
   //}
   //DBGPRINTF("\n");
   //DBGPRINTF("preDelta");
-  //for(i=0;i<vd->nTrans;i++) {
+  //for(i=0;i<vd->nStates;i++) {
   //if(vd->delta[j] == NINF) DBGPRINTF(" Ninf");
   //else DBGPRINTF(" %f",vd->delta[j]);
   //  if(vd->preDelta[i] == NINF) DBGPRINTF(" Ninf");
@@ -483,7 +492,7 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
   //}
   //DBGPRINTF("\n");
   /* update temporary path */
-  vd->tempPath[vd->relT] = BestDeltaIdx(vd->delta, vd->nTrans);
+  vd->tempPath[vd->relT] = BestDeltaIdx(vd->delta, vd->nStates);
   
   /* this is a hack to avoid the case (that should never happen)
      when all deltas are NINF and the resulting indez is -1 */
@@ -494,7 +503,7 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
   //  else	DBGPRINTF(" %d",vd->tempPath[i]);
   //DBGPRINTF("\n");
   //DBGPRINTF("psi before backtrack:\n");
-  //for(i=0;i<vd->nTrans;i++) {
+  //for(i=0;i<vd->nStates;i++) {
   //  int ii;
   //  for(ii=0;ii<vd->backTrackLen;ii++) {
   //	DBGPRINTF(" %d", vd->psi[i][ii]);
@@ -504,7 +513,7 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
   /* backtrack maxDelay times */
   /* check if it returns network or fisical states */
   res = BackTrack(vd);
-  /*   if(check<vd->nTrans && check>=0) */
+  /*   if(check<vd->nStates && check>=0) */
   /*     /\* get rid of this part *\/ */
   /*     vd->out->list->path[vd->out->list->framesDone++] = check; */
   /*   else { */
@@ -525,7 +534,7 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
      overflow errors. On the other hand it's gona take a very
      long time befor this is a problem */
   if(0) { /* vd->totMaxDelta > ...) */ 
-    for(i=0;i<vd->nTrans;i++)
+    for(i=0;i<vd->nStates;i++)
       if(isinf(vd->preDelta[i])!=-1)
 	vd->preDelta[i] -= vd->totMaxDelta;
     vd->totMaxDelta = NINF;
@@ -534,12 +543,12 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
   return vd->fisStateId->data[res];
 }
 
-int **AllocPsi(int nTrans, int backTrackLen) {
+int **AllocPsi(int nStates, int backTrackLen) {
   int **psi, i;
 
-  psi = (int **) malloc (nTrans * sizeof(int *));
+  psi = (int **) malloc (nStates * sizeof(int *));
   DBGPRINTF("before malloc vd->psi[i]\n");
-  for(i=0;i<nTrans;i++) {
+  for(i=0;i<nStates;i++) {
     //DBGPRINTF("[%i] ml ",i);
     psi[i] = (int *) malloc(backTrackLen*sizeof(int));
     //DBGPRINTF("ms ");
@@ -549,13 +558,13 @@ int **AllocPsi(int nTrans, int backTrackLen) {
   return psi;
 }
 
-int FreePsi(int **psi, int nTrans) {
+int FreePsi(int **psi, int nStates) {
   int i;
 
   if(psi == NULL) return 0;
 
   DBGPRINTF("before free vd->psi[i]\n");
-  for(i=0;i<nTrans;i++) {
+  for(i=0;i<nStates;i++) {
     //DBGPRINTF(" [%d]",i);
     if(psi[i]!=NULL) {
       free(psi[i]); psi[i] = NULL;
@@ -595,12 +604,12 @@ void ViterbiDecoder_DumpState(ViterbiDecoder *v) {
 /*   float min_delta=INF; */
 /*   float max_delta=NINF; */
 /*   float avg_delta=0.0; */
-/*   for(j=0;j<vd->nTrans;j++) { */
+/*   for(j=0;j<vd->nStates;j++) { */
 /*     if(vd->delta[j]<min_delta) min_delta=vd->delta[j]*1.1; */
 /*     if(vd->delta[j]>max_delta) max_delta=vd->delta[j]; */
 /*     avg_delta+=vd->delta[j]; */
 /*   } */
-/*   avg_delta/=vd->nTrans; */
+/*   avg_delta/=vd->nStates; */
 /*   fprintf(stderr, "delta: min=%f, mean=%f, max=%f\n", min_delta, avg_delta, max_delta); */
 
   fprintf(fh,"(*) simple dumps of circular arrays, the current position\n");
@@ -609,15 +618,15 @@ void ViterbiDecoder_DumpState(ViterbiDecoder *v) {
   fprintf(fh,"Current path buffer (*):\n");
   for(i=0; i<v->backTrackLen; i++) fprintf(fh, " %d", v->tempPath[i]);
   fprintf(fh,"\nCurrent delta values:\n");
-  for(i=0; i<v->nTrans; i++)
+  for(i=0; i<v->nStates; i++)
     if(isinf(v->delta[i]) != -1) fprintf(fh, " %f", v->delta[i]);
     else fprintf(fh, " -Inf");
   fprintf(fh, "\nPrevious delta values:\n");
-  for(i=0; i<v->nTrans; i++)
+  for(i=0; i<v->nStates; i++)
     if(isinf(v->preDelta[i]) != -1) fprintf(fh, " %f", v->preDelta[i]);
     else fprintf(fh, " -Inf");
   fprintf(fh,"\nCurrent psi (*):\n");
-  for(i=0; i<v->nTrans; i++) {
+  for(i=0; i<v->nStates; i++) {
     for(j=0; j<v->backTrackLen; j++) fprintf(fh, " %d", v->psi[i][j]);
     fprintf(fh, "\n");
   }
@@ -632,7 +641,7 @@ void ViterbiDecoder_DumpModel(ViterbiDecoder *v) {
   fh = fopen("vd-modeldump.txt", "w");
   fprintf(fh,"Dumping model data for the viterbi decoder\n");
   fprintf(fh,"Frame length: %d\n", v->frameLen);
-  fprintf(fh,"Number of transitions: %d\n", v->nTrans);
+  fprintf(fh,"Number of states: %d\n", v->nStates);
   fprintf(fh,"Maximum delay: %d\n", v->maxDelay);
   fprintf(fh,"Backtracking length: %d\n", v->backTrackLen);
   fprintf(fh,"Vector of phonetic priors:\n");

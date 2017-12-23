@@ -50,18 +50,18 @@ typedef struct {
   short frameIsLinPostProb; /* wether the incoming frames are linear */
   //int           nFrames;
   //int           sizeObs; /* CHECK that it's OK to remove it */
-  int           nTrans;
+  int           nStates;
   int           maxDelay;
   int           backTrackLen; /* always maxDelay + 1 */
   int           relT;         /* this is used in the circular arrays */
   LogFloat      totMaxDelta;  /* to reset the value of delta now and then */
-  LogFloat     *delta;        /* [nTrans] */
-  LogFloat     *preDelta;     /* [nTrans] */
-  Vector       *stPrior;      /* [nTrans] */
-  SparseMatrix *transmat;     /* [nTrans][variable] */
+  LogFloat     *delta;        /* [nStates] */
+  LogFloat     *preDelta;     /* [nStates] */
+  Vector       *stPrior;      /* [nStates] */
+  SparseMatrix *transmat;     /* [nStates][variable] */
   Vector       *phPrior;      /* [sizeObs] */
   IntVector    *fisStateId;    /* */
-  int         **psi;          /* [nTrans][backTrackLen] circular array */
+  int         **psi;          /* [nStates][backTrackLen] circular array */
   int          *tempPath;     /* [backTrackLen] circular array */
   /* Grammar scales */
   // float grammarFactor; /* sums logaritmically to the grammar kind weights */
