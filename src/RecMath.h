@@ -121,13 +121,21 @@ int Mod(int a, int d);
 /* row column value kind                                      */
 SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat);
 
+
+/* Allocate space for vectors and sparse matrices */
+Vector *CreateVector(int nels);
+IntVector *CreateIntVector(int nels);
+/* nels specifies, for each column, the number of nonzero elements.
+ It is the responsibility of the caller to free it. */
+SparseMatrix *CreateSparseMatrix(int ncols, int *nels);
+
 /* Create* functions: call these if the data is already available;
    the data is copied and it is up to the calling procedure to free
    the original vectors */
-SparseMatrix *CreateSparseMatrix(int *from, int *to, float *weight,
+SparseMatrix *CreateSparseMatrixWithData(int *from, int *to, float *weight,
 				  int *kind, int nElements);
-Vector *CreateVector(float *data, int n);
-IntVector *CreateIntVector(int *data, int n);
+Vector *CreateVectorWithData(float *data, int n);
+IntVector *CreateIntVectorWithData(int *data, int n);
 
 /* Deallocate space for sparse matrix */
 void FreeSparseMatrix(SparseMatrix **mptr);

@@ -24,10 +24,6 @@
 #include "Common.h"
 /* Libraries to use with ViterbiDecoder.c */
 
-/* Allocate space for vector */
-Vector *AllocVector(int nels);
-IntVector *AllocIntVector(int nels);
-
 /* log with underflow check */
 LogFloat safeLog(float x) {
   if(x<SMALL_NUM) return NINF;
@@ -43,7 +39,7 @@ int Mod(int a, int d) {
 }
 
 /* Allocate space for sparse matrix (used by LoadSparseMatrix) */
-SparseMatrix *AllocSparseMatrix(int ncols, int *nels) {
+SparseMatrix *CreateSparseMatrix(int ncols, int *nels) {
   int i;
   SparseMatrix *m;
 
@@ -78,7 +74,7 @@ SparseMatrix *DuplicateSparseMatrix(SparseMatrix *in) {
   int i,j;
 
   if(in == NULL) return NULL;
-  out = AllocSparseMatrix(in->ncols, in->nels);
+  out = CreateSparseMatrix(in->ncols, in->nels);
   for(i=0;i<in->ncols;i++) {
     for(j=0;j<in->nels[i];j++) {
       out->data[i][j] = in->data[i][j];
@@ -109,7 +105,7 @@ int SparseMatrixEqual(SparseMatrix *in1, SparseMatrix *in2) {
 
 
 /* Allocate space for vector */
-Vector *AllocVector(int nels) {
+Vector *CreateVector(int nels) {
   Vector *v;
 
   DBGPRINTF("malloc object\n");
@@ -121,7 +117,7 @@ Vector *AllocVector(int nels) {
 }
 
 /* Allocate space for vector */
-IntVector *AllocIntVector(int nels) {
+IntVector *CreateIntVector(int nels) {
   IntVector *v;
 
   DBGPRINTF("malloc object\n");
@@ -230,7 +226,7 @@ SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat) {
   weight = (float *) realloc(weight, n*sizeof(float));
   kind   = (int *)   realloc(kind, n*sizeof(int));
 
-  smat = CreateSparseMatrix(from, to, weight, kind, n);
+  smat = CreateSparseMatrixWithData(from, to, weight, kind, n);
   free(from); free(to); free(weight); free(kind);
 
   return smat;
@@ -317,8 +313,7 @@ char *basename(char *fname) {
 /* Create* finctions: call these if the data is already available */
 /* remember that the indexes have to be in C style already */
 /* inputs must be freed by caller functions */
-SparseMatrix *CreateSparseMatrix(int *from, int *to, float *weight,
-				  int *kind, int nElements) {
+SparseMatrix *CreateSparseMatrixWithData(int *from, int *to, float *weight, int *kind, int nElements) {
   int i,maxto=0,*maxfrom,rowidx;
   SparseMatrix *smat;
 
@@ -329,7 +324,7 @@ SparseMatrix *CreateSparseMatrix(int *from, int *to, float *weight,
   /* counts the number of elements for each row */
   for(i=0;i<nElements;i++) maxfrom[to[i]]++;
   /* Allocate space for the sparse matrix */
-  smat = AllocSparseMatrix(maxto, maxfrom);
+  smat = CreateSparseMatrix(maxto, maxfrom);
   /* fill it with values */
   for(i=0;i<nElements;i++) {
     rowidx = --maxfrom[to[i]];
@@ -344,11 +339,11 @@ SparseMatrix *CreateSparseMatrix(int *from, int *to, float *weight,
 
 /* the reason to copy the data, instead of just pointing
    to it, is to be consistent with AcquireSparseMatrix */
-Vector *CreateVector(float *data, int n) {
+Vector *CreateVectorWithData(float *data, int n) {
   int i;
   Vector *v;
 
-  v = AllocVector(n);
+  v = CreateVector(n);
   for(i=0;i<n;i++) v->data[i] = data[i];
 
   return v;
@@ -356,11 +351,11 @@ Vector *CreateVector(float *data, int n) {
 
 /* the reason to copy the data, instead of just pointing
    to it, is to be consistent with AcquireSparseMatrix */
-IntVector *CreateIntVector(int *data, int n) {
+IntVector *CreateIntVectorWithData(int *data, int n) {
   int i;
   IntVector *v;
 
-  v = AllocIntVector(n);
+  v = CreateIntVector(n);
   for(i=0;i<n;i++) v->data[i] = data[i];
 
   return v;
