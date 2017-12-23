@@ -1,5 +1,5 @@
 /***************************************************************************
-                         Recognizer.h  -  description
+                         Configuration.h  -  description
                              -------------------
     begin                : Tue May 13 2003
     copyright            : (C) 2003-2017 by Giampiero Salvi
@@ -30,7 +30,16 @@
 #include "LikelihoodGen.h"
 #include "ViterbiDecoder.h"
 
-int Configuration_ApplyConfigFile(char *filename, Recognizer *r);
+/* standard model file names: each configuration directory is
+   expected to contain the following files */
+#define PARAMETERS_FN   "parameters.conf"
+#define RNN_FN          "rnn.rtd"
+#define PHONE_PRIOR_FN  "phone_prior.txt"
+#define HMM_MAP_FN      "hmm_map.txt"
+#define HMM_PRIOR_FN    "hmm_prior.txt"
+#define HMM_TRANSMAT_FN "hmm_transmat.txt"
+
+int Configuration_ApplyConfig(char *dirname, Recognizer *r);
 
 
 #endif /* _CONFIGURATION_H_ */

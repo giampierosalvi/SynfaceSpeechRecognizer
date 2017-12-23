@@ -189,8 +189,41 @@ int Configuration_ApplyOption(char *option, char *value, Recognizer *r) {
       }
 }
 
-int Configuration_ApplyConfigFile(char *filename, Recognizer *r) {
+int joinPath(char *dest, const char *dirname, const char* filename) {
+  int dirlen = strlen(dirname);
+  int filelen = strlen(filename);
+
+  strcpy(dest, dirname);
+  dest[dirlen] = '/'; // this should be portable across platforms
+  for(i=0;i<filelen, i++)
+    dest[dirlen+1+i] = filename[i];
+  // check null symbol at the end
   
+  return dirlen+1+filelen;
+}
+
+int Configuration_ApplyConfig(char *dirname, Recognizer *r) {
+  char *tmpname, nameptr;
+  int dirlen = strlen(dirname);
+  int i;
+  
+  DBGPRINTF("applyng configuration in %s\n", dirname);
+  /* allocate enough memory for file names */
+  tmpname = (char *) malloc(dirlen+100);
+
+  joinPath(tmpname, dirname, PARAMETERS_FN);
+
+  joinPath(tmpname, dirname, RNN_FN);
+
+  joinPath(tmpname, dirname, PHONE_PRIOR_FN);
+
+  joinPath(tmpname, dirname, HMM_MAP_FN);
+
+  joinPath(tmpname, dirname, HMM_PRIOR_FN);
+
+  joinPath(tmpname, dirname, HMM_TRANSMAT_FN);
+
+  free(tmpname);
 }
 
 #endif /* _CONFIGURATION_H_ */
