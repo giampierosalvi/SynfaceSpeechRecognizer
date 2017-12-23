@@ -79,7 +79,7 @@ int ReadPhPrior(Recognizer *r, char *filename) {
   while(fscanf(f, "%f\n", &tmp[n]) != EOF) n++;
   fclose(f);
 
-  pp = CreateVector(tmp,n);
+  pp = CreateVectorWithData(tmp,n);
   LikelihoodGen_SetPhPrior(r->lg,pp);
   return 0;
 }
@@ -110,7 +110,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
     n++;
   }
   fclose(f);
-  transmat = CreateSparseMatrix(from, to, weight, type, n);
+  transmat = CreateSparseMatrixWithData(from, to, weight, type, n);
 
   /* state prior */
   sprintf(filename, "%s.prior", filebasename);
@@ -125,7 +125,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
     n++;
   }
   fclose(f);
-  stPrior = CreateVector(weight,n);
+  stPrior = CreateVectorWithData(weight,n);
 
   /* fis state id */
   sprintf(filename, "%s.map", filebasename);
@@ -140,7 +140,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
     n++;
   }
   fclose(f);
-  fisStateId = CreateIntVector(from,n);
+  fisStateId = CreateIntVectorWithData(from,n);
 
   ViterbiDecoder_SetGrammar(r->vd,transmat,stPrior,fisStateId);
   return 0;
@@ -180,7 +180,7 @@ int main(int argc, char **argv) {
 
   printf("creating recognizer object...\n"); fflush(stdout);
   //  r = Recognizer_Create();
-  r = Recognizer_Create(0);
+  r = Recognizer_Create(1);
 
   printf("configuring feature extraction...\n"); fflush(stdout);
   r->fe->inputrate = 8000;
@@ -194,12 +194,13 @@ int main(int argc, char **argv) {
   r->fe->lifter = 22.0;
 
   printf("configuring neural network...\n"); fflush(stdout);
-  ReadANN(r, "../share/spdatnet_sv.rtd");
-  ReadPhPrior(r, "../share/ph_prior_sv.txt");
+  ReadANN(r, "../share/swedish/rnn.rtd");
+  ReadPhPrior(r, "../share/swedish/phone_prior.txt");
     
   printf("configuring Viterbi decoder...\n"); fflush(stdout);
   r->vd = ViterbiDecoder_Create();
-  ReadGrammar(r, "../share/netsimple_sv", 1, 0);
+  //ReadGrammar(r, "../share/netsimple_sv", 1, 0);
+  ViterbiDecoder_CreateAndSetGrammar(r->vd, r->lg->outputsize, 3);
   ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
   Recognizer_SetLookahead(r, 3);
   //}
