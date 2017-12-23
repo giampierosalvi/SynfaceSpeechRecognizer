@@ -1,8 +1,9 @@
+#NICOLIB = ../ext/nico-1.1.2/lib
+NICOLIB = ../ext/nico
 CC	= gcc
 OPT	= -O -ffast-math 
-#CFLAGS	= $(OPT) -Wall -I../ext/nico-1.1.2/lib/
-CFLAGS	= $(OPT) -Wall -I../ext/nico/ # -D DEBUG
-LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L../ext/nico/
+CFLAGS	= $(OPT) -Wall -I$(NICOLIB) -D DEBUG
+LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
 LDLIBS = -lportaudio -lnico -lm
 
 modules = Audio.o Common.o FeatureExtraction.o Feedback.o LikelihoodGen.o \
