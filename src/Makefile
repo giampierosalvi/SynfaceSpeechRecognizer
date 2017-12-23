@@ -2,7 +2,7 @@
 NICOLIB = ../ext/nico
 CC	= gcc
 OPT	= -O -ffast-math 
-CFLAGS	= $(OPT) -Wall -I$(NICOLIB) -D DEBUG
+CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
 LDLIBS = -lportaudio -lnico -lm
 
