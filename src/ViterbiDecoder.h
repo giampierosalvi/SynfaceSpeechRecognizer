@@ -31,8 +31,15 @@
 //#include "Common.h"
 
 /* kind of weights */
-#define TRANSITION 0
-#define GRAMMAR 1
+#define PHONE_TRANSITION 0
+#define GRAMMAR_TRANSITION 1
+
+/* transition weights */
+/* -log(0.7) */
+#define SELF_TRANSITION_WEIGHT 0.35667494393873245
+/* -log(0.3) */
+#define NEXT_TRANSITION_WEIGHT 1.2039728043259361
+
 
 /* ViterbiDecoder */
 typedef struct {
@@ -85,6 +92,21 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen);
 int ViterbiDecoder_FreeGrammar(ViterbiDecoder *vd);
 int ViterbiDecoder_SetGrammar(ViterbiDecoder *vd, SparseMatrix *transmat,
 			      Vector *stPrior, IntVector *fisStateId);
+
+/* Creates a Markov model corresponding to the number of phones nPhones
+   and sets the proper data structures in ViterbiDecoder. Alternative
+   to ViterbiDecoder_SetGrammar where the grammar has been created
+   externally.
+   NOTE: the Markov model for each phone is a statePerPhone states
+   left-to-right model with probability of staying in the same state
+   set to 0.7 (this is an average over all states transitions in the
+   original HMM models).
+   NOTE: transition probabilities between phones are set to uniform
+   distribution.
+*/
+int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int statesPerPhone);
+
+
 int ViterbiDecoder_SetLookahead(ViterbiDecoder *vd, int lookahead);
 void ViterbiDecoder_SetFrameLen(ViterbiDecoder *vd, int frameLen);
 

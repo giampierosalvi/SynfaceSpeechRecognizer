@@ -134,6 +134,89 @@ int ViterbiDecoder_FreeGrammar(ViterbiDecoder *vd) {
   return 0;
 }
 
+int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int statesPerPhone) {
+  /* statesPerPhone + one state to connect to the other phones */
+  int statesPerModel = statesPerPhone+1;
+  int nStates = nPhones * statesPerModel;
+  /* temporary variables for transitions */
+  int nTrans, *from, *to, *kind, *state2phone=0;
+  LogFloat *weight;
+   /* current phone, state and transition number */
+  int ph, st, tr, j;
+  LogFloat phoneTransWeight = -log(1.0/nPhones);
+
+  /* left-to-right model for each phone + connecting transitions */
+  nTrans = nPhones * statesPerPhone * 2 + nPhones*nPhones;
+
+  DBGPRINTF("freing previous grammar\n");
+  ViterbiDecoder_FreeGrammar(vd);
+
+  /* creating state prior */
+  vd->stPrior = CreateVector(nStates);
+  for(ph=0; ph<nPhones; ph++)
+    vd->stPrior->data[ph*statesPerModel] = phoneTransWeight;
+
+  /* creating state to phone mapping */
+  vd->fisStateId = CreateIntVector(nStates);
+  for(st=0; st<nStates; st++)
+    vd->fisStateId->data[st] = st/statesPerModel;
+  
+  /* create transitions */
+  from = (int *) malloc(nTrans*sizeof(int));
+  to = (int *) malloc(nTrans*sizeof(int));
+  kind = (int *) malloc(nTrans*sizeof(int));
+  weight = (LogFloat *) malloc(nTrans*sizeof(LogFloat));
+  
+  st=0; tr=0;
+  for(ph=0; ph<nPhones; ph++) {
+    for(j=0; j<statesPerPhone; j++) {
+      state2phone[st] = ph;
+      /* self transition */
+      from[tr] = st;
+      to[tr] = st;
+      kind[tr] = PHONE_TRANSITION;
+      weight[tr] = SELF_TRANSITION_WEIGHT;
+      tr++;
+      /* next transition */
+      from[tr] = st;
+      to[tr] = st+1;
+      kind[tr] = PHONE_TRANSITION;
+      weight[tr] = NEXT_TRANSITION_WEIGHT;
+      tr++; st++;
+    }
+    state2phone[st] = ph;
+    /* "grammar" transitions */
+    for(j=0; j<nPhones; j++) {
+      from[tr] = st;
+      to[tr] = j*(statesPerModel);
+      kind[tr] = GRAMMAR_TRANSITION;
+      weight[tr] = phoneTransWeight;
+      tr++;
+    }
+  }
+  
+  DBGPRINTF("creating new grammar structures\n");
+  vd->transmat = CreateSparseMatrixWithData(from, to, weight, kind, nTrans);
+  vd->nTrans = nTrans;
+
+  /* free temporary structures */
+  free(from);
+  free(to);
+  free(weight);
+  free(kind);
+
+  /* viterbi variables */
+  DBGPRINTF("creating Viterbi temp variables\n");
+  vd->delta = (LogFloat *) malloc(vd->nTrans * sizeof(LogFloat));
+  vd->preDelta = (LogFloat *) malloc(vd->nTrans * sizeof(LogFloat));
+  /* allocates and sets psi and tempPath to 0 */
+  ViterbiDecoder_SetLookahead(vd,vd->maxDelay);
+  /* this forces computing prior (first file t=0) */
+  vd->hasPrior = 0;
+
+  return 0;
+}
+
 /* Comes from Rec.c (tclvit) TEST! */
 int ViterbiDecoder_SetGrammar(ViterbiDecoder *vd, SparseMatrix *transmat,
 			   Vector *stPrior, IntVector *fisStateId) {
