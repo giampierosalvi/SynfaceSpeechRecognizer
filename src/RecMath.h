@@ -125,7 +125,7 @@ SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat);
    the data is copied and it is up to the calling procedure to free
    the original vectors */
 SparseMatrix *CreateSparseMatrix(int *from, int *to, float *weight,
-				  int *kind, int n);
+				  int *kind, int nElements);
 Vector *CreateVector(float *data, int n);
 IntVector *CreateIntVector(int *data, int n);
 

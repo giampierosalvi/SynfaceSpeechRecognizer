@@ -318,20 +318,20 @@ char *basename(char *fname) {
 /* remember that the indexes have to be in C style already */
 /* inputs must be freed by caller functions */
 SparseMatrix *CreateSparseMatrix(int *from, int *to, float *weight,
-				  int *kind, int n) {
+				  int *kind, int nElements) {
   int i,maxto=0,*maxfrom,rowidx;
   SparseMatrix *smat;
 
-  for(i=0;i<n;i++) if(to[i] > maxto) maxto = to[i];
+  for(i=0;i<nElements;i++) if(to[i] > maxto) maxto = to[i];
   maxto++; /* from last index to size */
   maxfrom = (int *) malloc(maxto*sizeof(int));
   memset(maxfrom,0,maxto*sizeof(int));
   /* counts the number of elements for each row */
-  for(i=0;i<n;i++) maxfrom[to[i]]++;
+  for(i=0;i<nElements;i++) maxfrom[to[i]]++;
   /* Allocate space for the sparse matrix */
   smat = AllocSparseMatrix(maxto, maxfrom);
   /* fill it with values */
-  for(i=0;i<n;i++) {
+  for(i=0;i<nElements;i++) {
     rowidx = --maxfrom[to[i]];
     smat->data[to[i]][rowidx] = weight[i];
     smat->idxs[to[i]][rowidx] = from[i];
