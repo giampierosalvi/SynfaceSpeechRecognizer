@@ -1,0 +1,131 @@
+--- System1.1.2.c	2010-09-23 06:57:06.000000000 +0200
++++ System.c	2013-10-08 21:56:30.984307684 +0200
+@@ -70,6 +70,9 @@
+ #include "System.h"
+ #include "nMath.h"
+ 
++/* this is for int32_t */
++#include <stdint.h>
++
+ #define MAXSYSTEMLINE 1024
+ 
+ static long clock_tick = -1;
+@@ -437,27 +440,32 @@
+ 
+ long 
+ ReadInt32(FILE *fp, int little_endian) {
+-  long i;  
++  int32_t i;
+   fread(&i, 4, 1, fp);
+ 
+   if ((NATIVE_LITTLE_ENDIAN && !little_endian) ||
+       (NATIVE_BIG_ENDIAN && little_endian)) swap_4bytes((char *)&i, 1);
+ 
+-  return i;
++  return (long) i;
+ }
+ 
+ 
+ int 
+ ReadInts32(long *i, int n, FILE *fp, int little_endian) {
+-  int m = fread(i, 4, n, fp);
++  int m,k;
++  int32_t i32[n];
++
++  m = fread(i32, 4, n, fp);
+ 
+   if ((NATIVE_LITTLE_ENDIAN && !little_endian) ||
+-      (NATIVE_BIG_ENDIAN && little_endian)) swap_4bytes((char *)i, n);
++      (NATIVE_BIG_ENDIAN && little_endian)) swap_4bytes((char *)i32, n);
++
++  for(k=0;k<m;k++) i[k] = (long) i32[k];
+ 
+   return m;
+ }
+ 
+-
++/* did not change this, assuming short is 16 bits on all platforms */
+ short 
+ ReadInt16(FILE *fp, int little_endian) {
+   short i;  
+@@ -470,6 +478,7 @@
+ }
+ 
+ 
++/* did not change this, assuming short is 16 bits on all platforms */
+ int 
+ ReadInts16(short *i, int n, FILE *fp, int little_endian) {
+   int m = fread(i, 2, n, fp);
+@@ -492,19 +501,24 @@
+ 
+ long 
+ ReadLong(FILE *fp) {
+-  long i;  
++  int32_t i;  
+   fread(&i, 4, 1, fp);
+ 
+   if (SWAP_BYTE_ORDER) swap_4bytes((char *)&i, 1);
+ 
+-  return i;
++  return (long) i;
+ }
+ 
+ int 
+ ReadLongs(long *i, int n, FILE *fp) {
+-  int m = fread(i, 4, n, fp);
++  int m, k;
++  int32_t i32[n];
++
++  m = fread(i32, 4, n, fp);
+ 
+-  if (SWAP_BYTE_ORDER) swap_4bytes((char *)i, n);
++  if (SWAP_BYTE_ORDER) swap_4bytes((char *)i32, n);
++
++  for(k=0;k<m;k++) i[k] = (long) i32[k];
+ 
+   return m;
+ }
+@@ -512,23 +526,36 @@
+ 
+ void 
+ WriteLong(long i, FILE *fp) {
+-  if (SWAP_BYTE_ORDER) swap_4bytes((char *)&i, 1);
++  int32_t i32;
+ 
+-  fwrite(&i, 4, 1, fp);
++  /* we don't really know what to do if the long is not castable to 32 bits */
++  assert(i>=INT32_MIN && i<=INT32_MAX);
+ 
+-  if (SWAP_BYTE_ORDER) swap_4bytes((char *)&i, 1);
++  i32 = (int32_t) i;
++  if (SWAP_BYTE_ORDER) swap_4bytes((char *)&i32, 1);
++
++  fwrite(&i32, 4, 1, fp);
++
++  if (SWAP_BYTE_ORDER) swap_4bytes((char *)&i32, 1);
+ }
+ 
+ 
+ int 
+ WriteLongs(long *i, int n, FILE *fp) {
+-  int m;
++  int m,k;
++  int32_t i32[n];
++
++  for(k=0;k<n;k++) {
++    /* we don't really know what to do if the long is not castable to 32 bits */
++    assert(i[k]>=INT32_MIN && i[k]<=INT32_MAX);
++    i32[k] = (int32_t) i[k];
++  }
+ 
+-  if (SWAP_BYTE_ORDER) swap_4bytes((char *)i, n);
++  if (SWAP_BYTE_ORDER) swap_4bytes((char *)i32, n);
+ 
+-  m = fwrite(i, 4, n, fp);
++  m = fwrite(i32, 4, n, fp);
+ 
+-  if (SWAP_BYTE_ORDER) swap_4bytes((char *)i, n);
++  if (SWAP_BYTE_ORDER) swap_4bytes((char *)i32, n); // not really necessary
+ 
+   return m;
+ }
