@@ -100,7 +100,7 @@ typedef struct {
 
 /* high level functions (they should be used by the application)*/
 /* Create recognizer does not load the ANN */
-Recognizer *Recognizer_Create(int useSoundSource);
+Recognizer *Recognizer_Create(int liveAudio);
 int Recognizer_GetOutSym(Recognizer *r);
 int Recognizer_Free(Recognizer **rptr);
 int Recognizer_Start(Recognizer *r);

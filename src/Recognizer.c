@@ -47,8 +47,12 @@ int MaximumAPosteriori(float *app, int size);
 //int MaximumLikelihood(Recognizer *r);
 
 /* here we allocate the objects that are not dynamically configurable,
-   or for which dynamic configuration doesn't require memory allocation. */
-Recognizer *Recognizer_Create(int useSoundSource) {
+   or for which dynamic configuration doesn't require memory allocation.
+
+   liveAudio=1: use the soundcard to produce speech samples
+   liveAudio=0: speech samples are pushed by the application with Recognizer_PushSpeech
+*/
+Recognizer *Recognizer_Create(int liveAudio) {
   Recognizer *r;
   //int i;
 
