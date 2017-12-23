@@ -236,56 +236,6 @@ SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat) {
   return smat;
 }
 
-/* remember that the indexes have to be in C style already:
-   they are converted in the Tcl part */
-SparseMatrix *AcquireSparseMatrix(int *from, int *to, float *weight,
-				  int *kind, int n) {
-  int i,maxto=0,*maxfrom,rowidx;
-  SparseMatrix *smat;
-
-  for(i=0;i<n;i++) if(to[i] > maxto) maxto = to[i];
-  maxto++; /* from last index to size */
-  maxfrom = (int *) malloc(maxto*sizeof(int));
-  for(i=0;i<maxto;i++) maxfrom[i] = 0;
-  /* counts the number of elements for each row */
-  for(i=0;i<n;i++) maxfrom[to[i]]++;
-  /* Allocate space for the sparse matrix */
-  smat = AllocSparseMatrix(maxto, maxfrom);
-  /* fill it with values */
-  for(i=0;i<n;i++) {
-    rowidx = --maxfrom[to[i]];
-    smat->data[to[i]][rowidx] = weight[i];
-    smat->idxs[to[i]][rowidx] = from[i];
-    smat->kind[to[i]][rowidx] = kind[i];
-  }
-
-  return smat;
-}
-
-/* the reason to copy the data, instead of just pointing
-   to it, is to be consistent with AcquireSparseMatrix */
-Vector *AcquireVector(float *data, int n) {
-  int i;
-  Vector *v;
-
-  v = AllocVector(n);
-  for(i=0;i<n;i++) v->data[i] = data[i];
-
-  return v;
-}
-
-/* the reason to copy the data, instead of just pointing
-   to it, is to be consistent with AcquireSparseMatrix */
-IntVector *AcquireIntVector(int *data, int n) {
-  int i;
-  IntVector *v;
-
-  v = AllocIntVector(n);
-  for(i=0;i<n;i++) v->data[i] = data[i];
-
-  return v;
-}
-
 void Error(char *message,char *par) {
   DBGPRINTF("%s: %s\n",message,par);
   exit(0);

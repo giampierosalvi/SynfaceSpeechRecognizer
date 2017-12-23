@@ -120,16 +120,6 @@ int Mod(int a, int d);
 /* for it; the file format is, for each line:                 */
 /* row column value kind                                      */
 SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat);
-SparseMatrix *AcquireSparseMatrix(int *from, int *to, float *weight,
-				  int *type, int n);
-
-/* Acquire a vector precedently loaded from file (in the
-   Tcl part), allocating memory for it; */
-//Vector *LoadVector(char *fn);
-Vector *AcquireVector(float *data, int n);
-//IntVector *LoadIntVector(char *fn);
-IntVector *AcquireIntVector(int *data, int n);
-//CharVector *LoadCharVector(char *fn);
 
 /* Create* functions: call these if the data is already available;
    the data is copied and it is up to the calling procedure to free
