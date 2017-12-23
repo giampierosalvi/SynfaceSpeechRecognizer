@@ -28,8 +28,8 @@
 #include <stdio.h>
 
 #if DEBUG
-#define DBGPRINTF(format, args...) {fprintf(stderr, "%s: ", __func__); fprintf(stderr,format, ## args);}
-#define DBGPRINTF2(format, args...) {fprintf(stderr,format, ## args);}
+#define DBGPRINTF(format, args...) {fprintf(stderr, "%s: ", __func__); fprintf(stderr,format, ## args); fflush(stderr);}
+#define DBGPRINTF2(format, args...) {fprintf(stderr,format, ## args); fflush(stderr);}
 #else
 #define DBGPRINTF(format,args...) ;
 #define DBGPRINTF2(format,args...) ;
