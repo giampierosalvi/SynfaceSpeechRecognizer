@@ -31,7 +31,6 @@
    and working with wrapped Tcl code. */
 
 // 16 MB
-
 #define MAX_FILE_SIZE 16777216
 #ifndef error
 #  define error() return -1
@@ -165,6 +164,11 @@ void printShortArrayRange(short *a, int len) {
   printf("min=%d max=%d\n", smin, smax);
 }
 
+int display_results(void *data, int idx, int frame_time, double playback_time) {
+  Recognizer *r = (Recognizer *) data;
+  printf("%d %f %d [%s]\n", frame_time, playback_time, idx, r->ph[idx]); fflush(stdout);
+}
+
 int main(int argc, char **argv) {
   Recognizer *r = NULL;
   int i, j, res_idx, res_frame_time;
@@ -178,8 +182,7 @@ int main(int argc, char **argv) {
   //printf("freing recognizer object if existing...\n");
   //Recognizer_Free(&r);
 
-  printf("creating recognizer object...\n"); fflush(stdout);
-  //  r = Recognizer_Create();
+  printf("creating recognizer object in live mode...\n"); fflush(stdout);
   r = Recognizer_Create(1);
 
   printf("configuring feature extraction...\n"); fflush(stdout);
@@ -204,10 +207,28 @@ int main(int argc, char **argv) {
   ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
   Recognizer_SetLookahead(r, 3);
   //}
-
-  printf("starting the recognizer...\n"); fflush(stdout);
+  Recognizer_SetCallback(r, (RecognizerCallbackProc *) &display_results);
+    
+  printf("starting the recognizer in synchronous mode...\n"); fflush(stdout);
   Recognizer_Start(r);
 
+  for(i=0; i<3; i++) {
+    //while(1) {
+    printf("\n\nPress any key to test asynchronous mode...\n"); fflush(stdout);
+    ch = getchar();// getchar();
+    printf("stopping recognizer...\n"); fflush(stdout);
+    Recognizer_Stop(r);
+    printf("starting the recognizer in synchronous mode...\n"); fflush(stdout);
+    Recognizer_Start(r);
+  }
+  
+  printf("stopping recognizer...\n"); fflush(stdout);
+  Recognizer_Stop(r);
+  printf("setting result callback to NULL...\n"); fflush(stdout);
+  Recognizer_SetCallback(r, NULL);
+  printf("starting the recognizer in asynchronous mode...\n"); fflush(stdout);
+  Recognizer_Start(r);
+  
   while(1) {
     int exit=0;
     printf("\n\nPress the following key + enter to:\n  r: show results\n  e: get energy\n  t: show audio stream elapsed time\n  any other key: exit...\n"); fflush(stdout);
