@@ -35,6 +35,9 @@
 #define MAXQUEUELEN 1024
 #define NUMEXTRASYM 2
 
+/* first argument is cast to (Recognizer *) */
+typedef int (RecognizerCallbackProc)(void *data, int idx, int frame_time, double playback_time);
+
 /* define to dump intermediate results to file */
 //#define DUMPDATA 1
 
@@ -86,13 +89,15 @@ typedef struct {
   float     smp_ratio;  /* ratio between device/recognizer smp rate */
 
   float *features; /* hold pointer returned by PopFeatures */
+  
+  RecognizerCallbackProc *callback; /* callback procedure for synchronous mode */
 
   /* processing units */
-  SoundSource        *s;
-  Decimator          *d;
-  FeatureExtraction  *fe;
-  LikelihoodGen      *lg;
-  ViterbiDecoder     *vd;
+  SoundSource        *s;  /* audio input */
+  Decimator          *d;  /* resampling (downsampling) */
+  FeatureExtraction  *fe; /* MFCC extraction */
+  LikelihoodGen      *lg; /* Recurrent Neural Network */
+  ViterbiDecoder     *vd; /* HMM decoding */
   ResultQueue        *rq; /* this is where the results are stored */
   DirectResultBuf    *dr; /* buffer for direct results */
 
@@ -116,5 +121,10 @@ int Recognizer_GetResult(Recognizer *r, int *idx, int *frame_time, double *playb
 int Recognizer_SetLookahead(Recognizer *r, int lookahead);
 
 void Recognizer_SetDebug(Recognizer *r, int level);
+
+/* Normally, resuts are feched asynchronously with Recognizer_GetResult. The reason
+   for this is the design of the face animation in Tcl. If you want to get results
+   synchronously, you need to register a callback through this function. */
+void Recognizer_SetCallback(Recognizer *r, RecognizerCallbackProc *proc);
 
 #endif /* _RECOGNIZER_H_ */

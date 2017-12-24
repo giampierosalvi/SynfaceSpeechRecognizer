@@ -56,7 +56,7 @@ Recognizer *Recognizer_Create(int liveAudio) {
   Recognizer *r;
   //int i;
 
-  DBGPRINTF("entering...\n");
+  DBGPRINTF("creating Recognizer object...\n");
   r = (Recognizer *) malloc(sizeof(Recognizer));
   r->currFrame = 0;
   r->stopped = 1;
@@ -76,34 +76,32 @@ Recognizer *Recognizer_Create(int liveAudio) {
   r->asr_in_level_ratio = 1.0;
   r->asr_max_input_level = SHRT_MAX;
 
-  DBGPRINTF("initialize speech...\n");
   if (liveAudio) {
+    DBGPRINTF("initialize audio...\n");
     r->s = SoundSource_Create();
   } else {
     r->s = NULL;
   }
 
-  /* downsampling */
+  DBGPRINTF("creating downsampling structure...\n");
   r->d = Decimator_Create();
 
-  /* Feature Extraction */
+  DBGPRINTF("creating feature extraction structure...\n");
   r->fe = FeatureExtraction_Create();
 
-  /* Likelihood Generator */
+  DBGPRINTF("creating likelihood generator structure...\n");
   r->lg = LikelihoodGen_Create();
 
-  /* make SoundSource aware of the output pointer */
-  /* modify this (standard callback) */
   if (r->s) {
     DBGPRINTF("setting SoundSource callback\n");
     SoundSource_SetCallback(r->s, (SoundSourceCallbackProc *) &Recognizer_PushSpeech,
 			    (void *) r);
   }
-  /* We create this in any case, even if it's not used */
-  r->vd = ViterbiDecoder_Create();
+  DBGPRINTF("creating viterbi decoder structure...\n");
+  r->vd = ViterbiDecoder_Create(); // we create this even if it is not used
 
   /* result queue */
-  DBGPRINTF("allocating result queue\n");
+  DBGPRINTF("creating result queue...\n");
   r->rq = (ResultQueue *) malloc(sizeof(ResultQueue));
   r->rq->in = 0;
   r->rq->out = 0;
@@ -118,6 +116,8 @@ Recognizer *Recognizer_Create(int liveAudio) {
 
   r->currFrame = 0;
 
+  r->callback = NULL;
+  
   Recognizer_SetDebug(r, 0);
 
   DBGPRINTF("exiting\n");
@@ -416,7 +416,7 @@ int outputInitialSamples = 1;
 int Recognizer_PushSpeech(Recognizer *r, const short *audio_buffer, int audio_buffer_len) {
   int frames = 0;
   //  int i;
-
+  
   if(audio_buffer_len != r->audio_buffer_len) {
     DBGPRINTF("audio buffer length has changed, reallocating asr buffer...\n");
     r->audio_buffer_len = audio_buffer_len;
@@ -482,7 +482,8 @@ void printmax(float* v,int size, int res) {
 
 void Recognizer_ConsumeFrame(Recognizer *r) {
   int res = 0;
-  //Speetures *S = r->fe->speetures;
+  int idx, frame_time;
+  float playback_time;
   
   if(r->vd != NULL) {
     res = ViterbiDecoder_ConsumeFrame(r->vd, r->lg->lh,
@@ -523,6 +524,12 @@ void Recognizer_ConsumeFrame(Recognizer *r) {
 		     DirectResultBuf_PlaybackTime(r->dr));  
     r->prevRes = res;
     r->prevTimeHTK = currTimeHTK;
+
+    /* get results for synchronous processing */
+    if(r->callback != NULL) {
+      Recognizer_GetResult(r, &idx, &frame_time, &playback_time);
+      r->callback((void *) r, idx, frame_time, (double) playback_time);
+    }
   }
 }
 
@@ -552,7 +559,7 @@ int Recognizer_Start(Recognizer *r) {
   r->prevRes = 0;
   r->prevTimeHTK = 0;
 
-  if (r->s) {
+  if (r->s != NULL) {
     DBGPRINTF("opening audio device\n");
     err = SoundSource_Open(r->s, NULL, 0);
     if(err != 0) { /* fix this*/
@@ -566,9 +573,10 @@ int Recognizer_Start(Recognizer *r) {
   DBGPRINTF("activating LikelihoodGen\n");
   LikelihoodGen_Activate(r->lg);
 
-  if (r->s) {
+  if (r->s != NULL) {
     r->smp_ratio = r->s->samplingRate/r->fe->inputrate;
   } else {
+    // SMPRATE should come from the file input
     r->smp_ratio = SMPRATE/r->fe->inputrate;
   }
   /* buffers allocation moved to Recognizer_PushSpeech and
@@ -589,7 +597,7 @@ int Recognizer_Start(Recognizer *r) {
   }
   Decimator_ConfigureFactor(r->d, r->smp_ratio);
 
-  if (r->s) {
+  if (r->s != NULL) {
     DBGPRINTF("starting sound stream...\n");
     err = SoundSource_Start(r->s);
     if(err != 0) {
@@ -619,8 +627,10 @@ int Recognizer_Stop(Recognizer *r) {
     };
   }
   /* free temporary buffers */
-  DBGPRINTF("deallocating temporary buffer\n");
-  if(r->asr_buffer != NULL) free(r->asr_buffer); r->asr_buffer = NULL;
+  //DBGPRINTF("deallocating temporary buffer\n");
+  //if(r->asr_buffer != NULL) free(r->asr_buffer); r->asr_buffer = NULL;
+  ///* the following also forces Recognizer_PushSpeech to reallocate when necessary */
+  //r->asr_buffer_len = 0; 
 
   /* eventually consume last frames */
   while((r->features = FeatureExtraction_PopFeatures(r->fe)) != NULL) {
@@ -700,4 +710,8 @@ void Recognizer_SetDebug(Recognizer *r, int level) {
   if(r->s != NULL) SoundSource_SetDebug(r->s,level);
   if(r->lg != NULL) LikelihoodGen_SetDebug(r->lg, level);
   if(r->vd != NULL) ViterbiDecoder_SetDebug(r->vd, level);
+}
+
+void Recognizer_SetCallback(Recognizer *r, RecognizerCallbackProc *proc) {
+  r->callback = proc;
 }
