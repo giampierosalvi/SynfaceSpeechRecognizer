@@ -77,7 +77,7 @@ Recognizer *Recognizer_Create(int liveAudio) {
   r->asr_max_input_level = SHRT_MAX;
 
   DBGPRINTF("initialize speech...\n");
-  if (useSoundSource) {
+  if (liveAudio) {
     r->s = SoundSource_Create();
   } else {
     r->s = NULL;
