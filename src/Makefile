@@ -10,7 +10,7 @@ modules = Audio.o Common.o FeatureExtraction.o Feedback.o LikelihoodGen.o \
 	nrg.o RecMath.o Recognizer.o RingBuffer.o SoundProc.o \
 	SoundSource_pa.o ViterbiDecoder.o
 
-tests = test_audio test_portaudio test_recognizer_live test_recognizer_offline
+tests = test_playback test_portaudio test_recognizer_live test_recognizer_offline
 
 all: librec.a $(tests)
 
@@ -23,7 +23,7 @@ test_recognizer_live: test_recognizer_live.o
 test_recognizer_offline: test_recognizer_offline.o
 	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
 
-test_audio: test_audio.o
+test_playback: test_playback.o
 	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 test_portaudio: test_portaudio.o
