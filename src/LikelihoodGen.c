@@ -78,7 +78,7 @@ int LikelihoodGen_Free(LikelihoodGen **gptr) {
 }
 
 /* TODO: this shouldn't access g->numOutputStreams, g->outputStreamSizes */
-int LGLoadANN(LikelihoodGen *g, BinaryBuffer *buf) {
+int LikelihoodGen_LoadANN(LikelihoodGen *g, BinaryBuffer *buf) {
   int i;
   Net *net;
 
@@ -164,17 +164,6 @@ int LikelihoodGen_ConsumeFrame(LikelihoodGen *g) {
 int LikelihoodGen_Activate(LikelihoodGen *g) {
   RTSimInputRestart(g->sim);
 
-  return 0;
-}
-
-int ResetLikelihoodGen(LikelihoodGen *g) {
-  /* SpeechEnd is called by SoundSource */
-  // SpeechEnd(g->speetures); /* nothing more to push */
-  /* this is built in StartRecLoop (it will consume remaining frames) */
-  //while((PopFeatures(g->speetures)) != NULL) { }
-
-  //RTSimInputEnd(g->sim); /* nothing more to push */
-  // should I use this? RTSimInitialize(RTSimulator *work, char *file_name) {
   return 0;
 }
 

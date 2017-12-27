@@ -57,7 +57,7 @@ int ReadANN(Recognizer *r, char *filename) {
   fclose(f);
   binbuf = BinaryBuffer_Create((char *) buffer, n);
   free(buffer);
-  LGLoadANN(r->lg, binbuf);
+  LikelihoodGen_LoadANN(r->lg, binbuf);
   BinaryBuffer_Free(binbuf);
   Recognizer_GetOutSym(r);
 
@@ -212,6 +212,7 @@ int main(int argc, char **argv) {
   printf("starting the recognizer in synchronous mode...\n"); fflush(stdout);
   Recognizer_Start(r);
 
+  /* test three times to check memory management */
   for(i=0; i<3; i++) {
     //while(1) {
     printf("\n\nPress any key to test asynchronous mode...\n"); fflush(stdout);

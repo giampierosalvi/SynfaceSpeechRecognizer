@@ -1,5 +1,5 @@
 /***************************************************************************
-                          test_recognizer2.c  -  description
+                          test_recognizer_offline.c  -  description
                              -------------------
     begin                : Mon Dec 10 2012
     copyright            : (C) 2012-2017 by Giampiero Salvi
@@ -59,7 +59,7 @@ int ReadANN(Recognizer *r, char *filename) {
   fclose(f);
   binbuf = BinaryBuffer_Create((unsigned char *) buffer, n);
   free(buffer);
-  LGLoadANN(r->lg, binbuf);
+  LikelihoodGen_LoadANN(r->lg, binbuf);
   BinaryBuffer_Free(binbuf);
   Recognizer_GetOutSym(r);
 

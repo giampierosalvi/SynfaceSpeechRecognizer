@@ -402,7 +402,7 @@ int SoundSource_SetCallback(SoundSource *s, SoundSourceCallbackProc *proc, void 
 }
 
 /* set the feedback delay in seconds */
-void SoundSource_SetFBDelay(SoundSource *s, double delay) {
+void SoundSource_SetPlaybackDelay(SoundSource *s, double delay_sec) {
   int delay_samples = (int)
     (delay*s->samplingRate*s->inputParameters.channelCount);
 
@@ -414,7 +414,7 @@ void SoundSource_SetFBDelay(SoundSource *s, double delay) {
   RingBuffer_SetDelay(s->audiorate_buffer, delay_samples);
 }
 
-double SoundSource_GetFBDelay(SoundSource *s) {
+double SoundSource_GetPlaybackDelay(SoundSource *s) {
   if(s!=NULL) return(s->playback_delay_sec);
   return -1.0;
 }

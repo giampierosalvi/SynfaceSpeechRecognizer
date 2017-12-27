@@ -1,5 +1,5 @@
 /***************************************************************************
-                          test_audio.c  -  description
+                          test_playback.c  -  description
                              -------------------
     begin                : Mon Dec 10 2012
     copyright            : (C) 2012-2017 by Giampiero Salvi
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 
   printf(" --> Setting playback delay to half a second...\n");
   SoundSource_Stop(s);
-  SoundSource_SetFBDelay(s, 0.5);
+  SoundSource_SetPlaybackDelay(s, 0.5);
   SoundSource_Start(s);
   fprintf(stderr, " --> Now, you should hear your voice with some delay\n");
 
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
 
   printf(" --> Setting playback delay to one second...\n");
   SoundSource_Stop(s);
-  SoundSource_SetFBDelay(s, 1.0);
+  SoundSource_SetPlaybackDelay(s, 1.0);
   SoundSource_Start(s);
   fprintf(stderr, " --> Now, you should hear your voice with more delay\n");
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 
   printf(" --> Setting playback delay back to zero...\n");
   SoundSource_Stop(s);
-  SoundSource_SetFBDelay(s, 0.0);
+  SoundSource_SetPlaybackDelay(s, 0.0);
   SoundSource_Start(s);
   fprintf(stderr, " --> Now, you should hear your voice with minimal delay, again\n");
 

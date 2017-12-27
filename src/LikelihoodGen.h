@@ -49,15 +49,11 @@ typedef struct {
 LikelihoodGen *LikelihoodGen_Create();
 
 int LikelihoodGen_Free(LikelihoodGen **gptr);
-int LGLoadANN(LikelihoodGen *g, BinaryBuffer *buf);
+int LikelihoodGen_LGLoadANN(LikelihoodGen *g, BinaryBuffer *buf);
 
 /* consumes a frame and returns the likelihood vector in g->lh,
    waits if no speech avaliable jet, and returns -1 if end of speech */
 int LikelihoodGen_ConsumeFrame(LikelihoodGen *g);
-/* this consumes frames untill the result has changed
-   then it returns the new result */
-/* throws away the data that didn't get processed */
-int ResetLikelihoodGen(LikelihoodGen *g);
 
 int LikelihoodGen_SetPhPrior(LikelihoodGen *g, Vector *phPrior);
 int LikelihoodGen_CheckData(LikelihoodGen *g);

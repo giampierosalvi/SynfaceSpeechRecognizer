@@ -547,13 +547,6 @@ int Recognizer_Start(Recognizer *r) {
   DBGPRINTF("entering\n");
   if(!r->stopped) return 0;
 
-  /* this is for debugging: remove! */
-  //int i, j;
-  //for(j=0; j<r->vd->transmat->ncols; j++)
-  //  for(i=0; i<r->vd->transmat->nels[j]; i++)
-  //    if(r->vd->transmat->kind[j][i])
-  //	fprintf(stderr, "transmat->data[%d][%d] = %f\n", j, i, r->vd->transmat->data[j][i]);
-
   /* some initialization */
   r->currFrame = 0;
   r->prevRes = 0;
@@ -649,7 +642,6 @@ int Recognizer_Stop(Recognizer *r) {
 
   /* check that this function does all is necessary */
   FeatureExtraction_Deactivate(r->fe);
-  //  ResetLikelihoodGen(r->lg);
   if(r->vd != NULL) ViterbiDecoder_Reset(r->vd);
 
   r->stopped = 1;

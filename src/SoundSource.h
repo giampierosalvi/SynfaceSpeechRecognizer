@@ -111,8 +111,8 @@ int SoundSource_Stop(SoundSource *s);
 int SoundSource_SetCallback(SoundSource *s, SoundSourceCallbackProc *proc, void *data);
 
 /* set the playback delay in seconds */
-void SoundSource_SetFBDelay(SoundSource *s, double delay);
-double SoundSource_GetFBDelay(SoundSource *s);
+void SoundSource_SetPlaybackDelay(SoundSource *s, double delay_sec);
+double SoundSource_GetPlaybackDelay(SoundSource *s);
 
 int SoundSource_SetSamplingRate(SoundSource *s, int audio_rate);
 

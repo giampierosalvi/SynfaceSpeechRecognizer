@@ -35,11 +35,10 @@
 #define MAXQUEUELEN 1024
 #define NUMEXTRASYM 2
 
-/* first argument is cast to (Recognizer *) */
+/* RecognizerCallbackProc
+   returns recognition results as they are generated. Used for synchronous mode.
+   NOTE: data should be cast to (Recognizer *) */
 typedef int (RecognizerCallbackProc)(void *data, int idx, int frame_time, double playback_time);
-
-/* define to dump intermediate results to file */
-//#define DUMPDATA 1
 
 typedef struct {
   int idx;
@@ -47,6 +46,10 @@ typedef struct {
   double playback_time; /* predicted playback time in seconds */
 } Result;
 
+/* ResultQueue holds the results queue. Results are generated only if the
+   recognition hypothesis changes and not for every frame. The frame_time
+   (int) and playback_time (double) should be used to synchronize the
+   results with the speech signal. */
 typedef struct {
   Result data[MAXQUEUELEN];
   int in;
@@ -54,8 +57,10 @@ typedef struct {
   int acc;
 } ResultQueue;
 
-/* this holds results obtained at the signal processing level, from
-   SoundSource and RTSpeetures (without delays due to look-ahead) */
+/* DirectResultBuf holds results obtained at the signal processing level,
+   from SoundSource and RTSpeetures (without delays due to look-ahead).
+   These results are generated for every frame, contrary to the phone
+   results. */
 typedef struct {
   int *ismuted;
   int *iscalib;
