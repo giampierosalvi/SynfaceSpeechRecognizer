@@ -30,7 +30,7 @@ int TestCallback(void *dummy, short *speech, int num_samples) {
 }
 
 void waitForEnter() {
-  printf("Press [Enter] for next step . . .");
+  printf("Press [Enter] for next step...");
   fflush(stdout);
   getchar();
 
@@ -42,6 +42,11 @@ int main(int argc, char **argv) {
 
 
   fprintf(stderr, " --------- AUDIO PLAYBACK TEST -------------\n");
+  fprintf(stderr, " - Run this test with headphones to avoid  -\n");
+  fprintf(stderr, " - feedback and clipping                   -\n");
+  fprintf(stderr, " -------------------------------------------\n");
+
+  waitForEnter();
   fprintf(stderr, " --> Setting up audio callback -------------\n");
   // setting sound source callback
   err = SoundSource_SetCallback(s, (SoundSourceCallbackProc *) &TestCallback, NULL);
@@ -67,7 +72,7 @@ int main(int argc, char **argv) {
 
   waitForEnter();
 
-  printf("--> Setting playback delay to half a second...\n");
+  printf(" --> Setting playback delay to half a second...\n");
   SoundSource_Stop(s);
   SoundSource_SetFBDelay(s, 0.5);
   SoundSource_Start(s);
@@ -75,7 +80,7 @@ int main(int argc, char **argv) {
 
   waitForEnter();
 
-  printf("--> Setting playback delay to one second...\n");
+  printf(" --> Setting playback delay to one second...\n");
   SoundSource_Stop(s);
   SoundSource_SetFBDelay(s, 1.0);
   SoundSource_Start(s);
@@ -83,7 +88,7 @@ int main(int argc, char **argv) {
 
   waitForEnter();
 
-  printf("--> Setting playback delay back to zero...\n");
+  printf(" --> Setting playback delay back to zero...\n");
   SoundSource_Stop(s);
   SoundSource_SetFBDelay(s, 0.0);
   SoundSource_Start(s);
