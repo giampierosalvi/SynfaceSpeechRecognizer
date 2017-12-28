@@ -403,14 +403,16 @@ int SoundIO_SetCallback(SoundIO *s, SoundIOCallbackProc *proc, void *data) {
 
 /* set the feedback delay in seconds */
 void SoundIO_SetPlaybackDelay(SoundIO *s, double delay_sec) {
-  int delay_samples = (int)
-    (delay*s->samplingRate*s->inputParameters.channelCount);
+  int delay_samples;
 
+  if(s==NULL) return;
   if(!s->stopped) return; // safeguard
 
-  DBGPRINTF("delay in seconds: %f\n",delay);
-  s->playback_delay_sec = delay;
-  //Feedback_SetDelay(s->fb,delay_samples*sizeof(short));
+  s->playback_delay_sec = delay_sec;
+  delay_samples = (int)
+    (delay_sec*s->samplingRate*s->inputParameters.channelCount);
+
+  DBGPRINTF("setting delay: %f sec (%d samples)\n",delay_sec, delay_samples);
   RingBuffer_SetDelay(s->audiorate_buffer, delay_samples);
 }
 
