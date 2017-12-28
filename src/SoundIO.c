@@ -233,6 +233,7 @@ int SoundIO_Open(SoundIO *s, char *device, int smpRate) {
   const PaDeviceInfo *dev_info;
   const PaStreamParameters *ip, *op; /* pointers to input and output param*/
 
+  if(s==NULL) return -1;
   if(s->inputParameters.device < 0 && s->outputParameters.device < 0) {
     DBGPRINTF("input and output devices can not be both disabled (%d, %d)\n", s->inputParameters.device, s->outputParameters.device);
     return -1;
@@ -309,6 +310,7 @@ int SoundIO_Open(SoundIO *s, char *device, int smpRate) {
 int SoundIO_Start(SoundIO *s) {
   PaError err;
 
+  if(s==NULL) return -1;
   if(!s->stopped) return 0;
 
   DBGPRINTF("starting...\n");
@@ -343,6 +345,7 @@ int SoundIO_Stop(SoundIO *s) {
   PaError err;
   //int i;
 
+  if(s==NULL) return -1;
   if (s->stopped == 1) return 0;
   /* I'd like this to be in the end, but it doesn't work. I suppose that
      SoundIO_Stop is called more than once (for example through
@@ -369,6 +372,7 @@ int SoundIO_Close(SoundIO *s) {
   PaError err;
   //int i,res;
 
+  if(s==NULL) return -1;
   SoundIO_Stop(s);
 
   DBGPRINTF("closing portaudio stream...\n");
@@ -388,12 +392,13 @@ int SoundIO_Close(SoundIO *s) {
   //if(s->snd_buf != NULL) free(s->snd_buf); s->snd_buf = NULL;
   //if(s->snd_buf_mono != NULL) free(s->snd_buf_mono); s->snd_buf_mono = NULL;
 
-  DBGPRINTF("closing...\n");
+  DBGPRINTF("exiting...\n");
 
   return 0;
 }
 
 int SoundIO_SetCallback(SoundIO *s, SoundIOCallbackProc *proc, void *data) {
+  if(s==NULL) return -1;
   s->hasCallback = 1;
   s->callback = proc;
   s->callbackData = data;
@@ -422,6 +427,7 @@ double SoundIO_GetPlaybackDelay(SoundIO *s) {
 }
 
 int SoundIO_SetSamplingRate(SoundIO *s, int audio_rate) {
+  if(s==NULL) return -1;
   s->samplingRate = audio_rate;
   DBGPRINTF("new rate = %d\n", audio_rate);
   //s->framesPerBuffer = s->samplingRate/100; /* 10ms */
@@ -439,12 +445,14 @@ int SoundIO_GetOutPos(SoundIO *s) { // from Feedback
 }
 
 double SoundIO_GetOutTime(SoundIO *s) { // from Feedback
+  if(s==NULL) return -1.0;
   return(s->outtime);
 }
 
 /* v19 version returning seconds (double) */
 double SoundIO_GetStreamTime(SoundIO *s) {
   double t;
+  if(s==NULL) return 0.0;
   if(s->stopped) return 0.0;
   if(s->pa_stream == NULL) return 0.0;
   t = Pa_GetStreamTime(s->pa_stream);
@@ -453,6 +461,7 @@ double SoundIO_GetStreamTime(SoundIO *s) {
 }
 
 int SoundIO_IsMuted(SoundIO *s) {
+  if(s==NULL) return -1;
   return s->mute_flag;
 }
 
@@ -463,6 +472,8 @@ void SoundIO_SetDebug(SoundIO *s, int level) {
 int SoundIO_SetInDevice(SoundIO *s, int idx) {
   int ndevs = Pa_GetDeviceCount();
 
+  if(s==NULL) return -1;
+  
   if(0 <= idx && idx < ndevs) {
     s->inputParameters.device = idx;
     DBGPRINTF("indev changed to %d\n",idx);
@@ -475,6 +486,8 @@ int SoundIO_SetInDevice(SoundIO *s, int idx) {
 int SoundIO_SetOutDevice(SoundIO *s, int idx) {
   int ndevs = Pa_GetDeviceCount();
 
+  if(s==NULL) return -1;
+
   if(idx < ndevs) {
     s->outputParameters.device = idx;
     DBGPRINTF("outdev changed to %d\n",idx);
@@ -485,10 +498,12 @@ int SoundIO_SetOutDevice(SoundIO *s, int idx) {
 }
 
 int SoundIO_GetInDevice(SoundIO *s) {
+  if(s==NULL) return -1;
   return s->inputParameters.device;
 }
 
 int SoundIO_GetOutDevice(SoundIO *s) {
+  if(s==NULL) return -1;
   return s->outputParameters.device;
 }
 
