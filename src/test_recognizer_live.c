@@ -247,7 +247,7 @@ int main(int argc, char **argv) {
       printf("Audio energy=%f\n", r->s->nrgY);
       break;
     case 't':
-      printf("Audio stream time=%f\n", SoundSource_GetStreamTime(r->s));
+      printf("Audio stream time=%f\n", SoundIO_GetStreamTime(r->s));
       printf("countInitialSamples=%d\n", countInitialSamples);
       printf("r->currFrame=%d\n", r->currFrame);
       printf("r->s->hasCallback=%d\n", r->s->hasCallback);

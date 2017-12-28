@@ -21,7 +21,7 @@
  ***************************************************************************/
 
 #include "Configuration.h"
-#include "SoundSource.h"
+#include "SoundIO.h"
 #include "SoundProc.h"
 #include "FeatureExtraction.h"
 #include "LikelihoodGen.h"

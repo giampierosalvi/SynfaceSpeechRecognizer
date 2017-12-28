@@ -77,14 +77,14 @@ static int ConfigCmd(ClientData cdata, Tcl_Interp *interp,int objc,
   if (strncmp(c,"-fbdelay",l)==0) {
     double delay;
     if(objc == 3) {
-      delay = SoundSource_GetFBDelay(r->s);
+      delay = SoundSource_GetPlaybackDelay(r->s);
       Tcl_SetObjResult(interp, Tcl_NewDoubleObj(delay));
       return TCL_OK;
     }
     if(objc == 4) {
       if (Tcl_GetDoubleFromObj(interp,objv[3],&delay) != TCL_OK)
 	return TCL_ERROR;
-      SoundSource_SetFBDelay(r->s, delay);
+      SoundSource_SetPlaybackDelay(r->s, delay);
       return TCL_OK;
     }
     Tcl_WrongNumArgs(interp,1,objv,"configure -fbdelay [delay]");
@@ -350,10 +350,10 @@ static int ConfigCmd(ClientData cdata, Tcl_Interp *interp,int objc,
     //Tcl_Eval(interp,"report \"before fmemopen\"");
     //netstream = fmemopen((void *) net, (size_t) n, "r");
     buf = BinaryBuffer_Create((char *) net,n);
-    DBGPRINTF("before LGLoadANN\n");
+    DBGPRINTF("before LikelihoodGen_LoadANN\n");
     if(r->lg == NULL) DBGPRINTF("r->lg is NULL!!!\n");
     //if(netstream == NULL) Tcl_Eval(interp,"report netstream is NULL!!!");
-    if(LGLoadANN(r->lg, buf)) return TCL_ERROR;
+    if(LikelihoodGen_LoadANN(r->lg, buf)) return TCL_ERROR;
     //fclose(netstream);
     BinaryBuffer_Free(buf);
     DBGPRINTF("before Recognizer_GetOutSym\n");

@@ -9,7 +9,7 @@ LDLIBS = -lportaudio -lnico -lm
 
 modules = Audio.o Common.o FeatureExtraction.o Feedback.o LikelihoodGen.o \
 	nrg.o RecMath.o Recognizer.o RingBuffer.o SoundProc.o \
-	SoundSource_pa.o ViterbiDecoder.o
+	SoundIO.o ViterbiDecoder.o
 
 tests = test_playback test_portaudio test_recognizer_live test_recognizer_offline
 

@@ -78,7 +78,7 @@ Recognizer *Recognizer_Create(int liveAudio) {
 
   if (liveAudio) {
     DBGPRINTF("initialize audio...\n");
-    r->s = SoundSource_Create();
+    r->s = SoundIO_Create();
   } else {
     r->s = NULL;
   }
@@ -93,8 +93,8 @@ Recognizer *Recognizer_Create(int liveAudio) {
   r->lg = LikelihoodGen_Create();
 
   if (r->s) {
-    DBGPRINTF("setting SoundSource callback\n");
-    SoundSource_SetCallback(r->s, (SoundSourceCallbackProc *) &Recognizer_PushSpeech,
+    DBGPRINTF("setting SoundIO callback\n");
+    SoundIO_SetCallback(r->s, (SoundIOCallbackProc *) &Recognizer_PushSpeech,
 			    (void *) r);
   }
   DBGPRINTF("creating viterbi decoder structure...\n");
@@ -108,7 +108,7 @@ Recognizer *Recognizer_Create(int liveAudio) {
   r->rq->acc = 0;
 
   /* buffer for direct results (used only with viterbi decoder when
-     the results coming from SoundSource and RTSpeetures need to be
+     the results coming from SoundIO and RTSpeetures need to be
      realigned with the lookahead). By default (no viterbi) the delay
      is 0. This is modified from tcl when viterbi is created. */
   DBGPRINTF("creating direct result buffer\n");
@@ -182,9 +182,9 @@ int Recognizer_Free(Recognizer **rptr) {
   Recognizer_Stop(r);
 
   if (r->s) {
-    //DBGPRINTF("freing SoundSource...\n");
-    if(SoundSource_Free(&r->s)!=0)
-      DBGPRINTF("failed freing SoundSource");
+    //DBGPRINTF("freing SoundIO...\n");
+    if(SoundIO_Free(&r->s)!=0)
+      DBGPRINTF("failed freing SoundIO");
   }
   DBGPRINTF("freing Decimator...\n");
   if(Decimator_Free(&r->d)!=0)
@@ -243,7 +243,7 @@ int Recognizer_SetLookahead(Recognizer *r, int lookahead) {
   return 0;
 }
 
-/* problem: results coming from SoundSource (muted) and RTSpeetures
+/* problem: results coming from SoundIO (muted) and RTSpeetures
    (calibration) are instantaneous, while results coming from the
    recognizer (phones) are delayed vd->maxDelay frames. I need a
    buffer to store the direct results. */
@@ -339,9 +339,9 @@ double DirectResultBuf_PlaybackTime(DirectResultBuf *dr) {
 
 /* This is the processing chain in this version of the recognizer: rather than
    building a chain of objects as in the asr package
-   SoundSource -> SoundProc -> Features -> Likelihood -> Viterbi
+   SoundIO -> SoundProc -> Features -> Likelihood -> Viterbi
    we have a flat architecture where the Recognizer object controls everything
-   SoundSource ->  Recognizer
+   SoundIO ->  Recognizer
                     |-> Decimator
                     |-> FeatureExtraction
                     |-> Likelihood
@@ -500,10 +500,10 @@ void Recognizer_ConsumeFrame(Recognizer *r) {
   /* first get the istantaneous values and update the buffer... */
   if (r->s) {
     DirectResultBuf_Update(r->dr,
-			   SoundSource_IsMuted(r->s),
+			   SoundIO_IsMuted(r->s),
 			   0, //Speetures_IsCalib(S),
 			   r->currFrame*10, // make time flexible!!
-			   SoundSource_GetStreamTime(r->s));
+			   SoundIO_GetStreamTime(r->s));
   } else {
     DirectResultBuf_Update(r->dr,
 			   0,
@@ -554,7 +554,7 @@ int Recognizer_Start(Recognizer *r) {
 
   if (r->s != NULL) {
     DBGPRINTF("opening audio device\n");
-    err = SoundSource_Open(r->s, NULL, 0);
+    err = SoundIO_Open(r->s, NULL, 0);
     if(err != 0) { /* fix this*/
       DBGPRINTF("failed opening device\n");
       return err;
@@ -592,9 +592,9 @@ int Recognizer_Start(Recognizer *r) {
 
   if (r->s != NULL) {
     DBGPRINTF("starting sound stream...\n");
-    err = SoundSource_Start(r->s);
+    err = SoundIO_Start(r->s);
     if(err != 0) {
-      DBGPRINTF( "could not start SoundSource\n");
+      DBGPRINTF( "could not start SoundIO\n");
       return err;
     };
     
@@ -610,12 +610,12 @@ int Recognizer_Stop(Recognizer *r) {
 
   if(r->stopped) return 0;
   if (r->s) {
-    if(SoundSource_Stop(r->s)!=0) { /* frees what SoundSource_Start allocated */
-      DBGPRINTF( "could not stop SoundSource\n");
+    if(SoundIO_Stop(r->s)!=0) { /* frees what SoundIO_Start allocated */
+      DBGPRINTF( "could not stop SoundIO\n");
       return -1;
     };
-    if(SoundSource_Close(r->s)!=0) { /* frees what SoundSource_Open allocated */
-      DBGPRINTF( "could not close SoundSource\n");
+    if(SoundIO_Close(r->s)!=0) { /* frees what SoundIO_Open allocated */
+      DBGPRINTF( "could not close SoundIO\n");
       return -1;
     };
   }
@@ -699,7 +699,7 @@ int Recognizer_GetResult(Recognizer *r, int *idx, int *frame_time, double *playb
 
 void Recognizer_SetDebug(Recognizer *r, int level) {
   if(r != NULL) r->debug = level;
-  if(r->s != NULL) SoundSource_SetDebug(r->s,level);
+  if(r->s != NULL) SoundIO_SetDebug(r->s,level);
   if(r->lg != NULL) LikelihoodGen_SetDebug(r->lg, level);
   if(r->vd != NULL) ViterbiDecoder_SetDebug(r->vd, level);
 }

@@ -20,7 +20,7 @@
 
  ***************************************************************************/
 
-#include "SoundSource.h"
+#include "SoundIO.h"
 #include <stdio.h>
 
 #define SMPRATE 48000
@@ -38,32 +38,31 @@ void waitForEnter() {
 
 int main(int argc, char **argv) {
   int err;
-  SoundSource *s = SoundSource_Create();
-
+  SoundIO *s = SoundIO_Create();
 
   fprintf(stderr, " --------- AUDIO PLAYBACK TEST -------------\n");
   fprintf(stderr, " - Run this test with headphones to avoid  -\n");
-  fprintf(stderr, " - feedback and clipping                   -\n");
+  fprintf(stderr, " - feedback noise and clipping             -\n");
   fprintf(stderr, " -------------------------------------------\n");
 
   waitForEnter();
   fprintf(stderr, " --> Setting up audio callback -------------\n");
   // setting sound source callback
-  err = SoundSource_SetCallback(s, (SoundSourceCallbackProc *) &TestCallback, NULL);
+  err = SoundIO_SetCallback(s, (SoundIOCallbackProc *) &TestCallback, NULL);
   if(err != 0) {
     fprintf(stderr, "failed setting callback\n");
     return err;
   }
 
   fprintf(stderr, " --> Opening audio stream with default values\n");
-  err = SoundSource_Open(s, NULL, 0); //char *device, SMPRATE);
+  err = SoundIO_Open(s, NULL, 0); //char *device, SMPRATE);
   if(err != 0) {
     fprintf(stderr, "failed opening device\n");
     return err;
   }
 
   fprintf(stderr, " --> Starting audio stream -----------------\n");
-  err = SoundSource_Start(s);
+  err = SoundIO_Start(s);
   if(err != 0) {
     fprintf(stderr, "failed starting stream\n");
     return err;
@@ -73,34 +72,34 @@ int main(int argc, char **argv) {
   waitForEnter();
 
   printf(" --> Setting playback delay to half a second...\n");
-  SoundSource_Stop(s);
-  SoundSource_SetPlaybackDelay(s, 0.5);
-  SoundSource_Start(s);
+  SoundIO_Stop(s);
+  SoundIO_SetPlaybackDelay(s, 0.5);
+  SoundIO_Start(s);
   fprintf(stderr, " --> Now, you should hear your voice with some delay\n");
 
   waitForEnter();
 
   printf(" --> Setting playback delay to one second...\n");
-  SoundSource_Stop(s);
-  SoundSource_SetPlaybackDelay(s, 1.0);
-  SoundSource_Start(s);
+  SoundIO_Stop(s);
+  SoundIO_SetPlaybackDelay(s, 1.0);
+  SoundIO_Start(s);
   fprintf(stderr, " --> Now, you should hear your voice with more delay\n");
 
   waitForEnter();
 
   printf(" --> Setting playback delay back to zero...\n");
-  SoundSource_Stop(s);
-  SoundSource_SetPlaybackDelay(s, 0.0);
-  SoundSource_Start(s);
+  SoundIO_Stop(s);
+  SoundIO_SetPlaybackDelay(s, 0.0);
+  SoundIO_Start(s);
   fprintf(stderr, " --> Now, you should hear your voice with minimal delay, again\n");
 
   waitForEnter();
 
   fprintf(stderr, " --> Closing down\n");
-  SoundSource_Stop(s);
-  SoundSource_Close(s);
+  SoundIO_Stop(s);
+  SoundIO_Close(s);
   // cleaning up
-  SoundSource_Free(&s);
+  SoundIO_Free(&s);
 
   fprintf(stderr, " --------- AUDIO PLAYBACK TEST ENDED --------\n");
 

@@ -24,7 +24,7 @@
 #define _CONFIGURATION_H_
 
 #include "Recognizer.h"
-#include "SoundSource.h"
+#include "SoundIO.h"
 #include "SoundProc.h"
 #include "FeatureExtraction.h"
 #include "LikelihoodGen.h"

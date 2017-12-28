@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SoundSource_pa.c  -  description
+                          SoundIO.c  -  description
                              -------------------
     begin                : Fri Jan 10 2003
     copyright            : (C) 2003-2017 by Giampiero Salvi
@@ -22,7 +22,7 @@
 
 #include <stdlib.h>
 #include "Common.h"
-#include "SoundSource.h"
+#include "SoundIO.h"
 //#include "Feedback.h"
 //#include "LMS.h"
 #include "nrg.h"
@@ -72,14 +72,14 @@ void ShortMinMax(short *min, short *max, short *buffer, int len) {
   }
 }
 
-int paSoundSourceCallback( const void *inputBuffer, void *outputBuffer,
+int paSoundIOCallback( const void *inputBuffer, void *outputBuffer,
 			   unsigned long framesPerBuffer,
 			   const PaStreamCallbackTimeInfo* timeInfo,
 			   PaStreamCallbackFlags statusFlags,
 			   void *userData ) {
-  SoundSource* s;
+  SoundIO* s;
 
-  s = (SoundSource*)userData;
+  s = (SoundIO*)userData;
   s->outtime = timeInfo->outputBufferDacTime;
 
   if( inputBuffer == NULL || s->stopped) return 0;
@@ -101,8 +101,8 @@ int paSoundSourceCallback( const void *inputBuffer, void *outputBuffer,
   return 0;
 }
 
-SoundSource *SoundSource_Create() {
-  SoundSource *s;
+SoundIO *SoundIO_Create() {
+  SoundIO *s;
   int dev;
   const PaDeviceInfo *dev_info;
 
@@ -114,7 +114,7 @@ SoundSource *SoundSource_Create() {
   Pa_Initialize();
 
   DBGPRINTF("before malloc\n");
-  s = (SoundSource *) malloc(sizeof(SoundSource));
+  s = (SoundIO *) malloc(sizeof(SoundIO));
   DBGPRINTF("after malloc\n");
 
   s->hasCallback = 0;
@@ -171,7 +171,7 @@ SoundSource *SoundSource_Create() {
   s->playback_flag = 0;
   s->playback_delay_sec = 0.2;
   /* check that it's safe to run Feedback_SetDelay several times */
-  //SoundSource_SetFBDelay(s,s->playback_delay_sec);
+  //SoundIO_SetFBDelay(s,s->playback_delay_sec);
 
   /* note that the filter is optimised for 48kHz -> 8kHz conversion */
   //s->d = Decimator_Create();
@@ -182,19 +182,19 @@ SoundSource *SoundSource_Create() {
   return s;
 }
 
-/* some of the freing is done in SoundSource_Close for consistency
-   with SoundSource_Open */
-int SoundSource_Free(SoundSource **sptr) {
-  SoundSource *s = *sptr;
+/* some of the freing is done in SoundIO_Close for consistency
+   with SoundIO_Open */
+int SoundIO_Free(SoundIO **sptr) {
+  SoundIO *s = *sptr;
 
   if(s == NULL) return 0;
 
   /* changed from close to stop (close does only stop)*/
   DBGPRINTF("stopping...\n");
-  SoundSource_Stop(s);
+  SoundIO_Stop(s);
   DBGPRINTF("stopping done.\n");
   DBGPRINTF("closing...\n");
-  SoundSource_Close(s);
+  SoundIO_Close(s);
   DBGPRINTF("closing done.\n");
 
   if(s->nrgX != NULL) {
@@ -227,7 +227,7 @@ int SoundSource_Free(SoundSource **sptr) {
 
 /* some of the allocation is done here because the smpRate is
    needed. Not nice, but to keep consistent with the OSS version */
-int SoundSource_Open(SoundSource *s, char *device, int smpRate) {
+int SoundIO_Open(SoundIO *s, char *device, int smpRate) {
   PaError err;
   const PaStreamInfo *stream_info;
   const PaDeviceInfo *dev_info;
@@ -285,7 +285,7 @@ int SoundSource_Open(SoundSource *s, char *device, int smpRate) {
 		      (int) s->samplingRate * AUDIO_BUFFER_LEN_SEC,//paFramesPerBufferUnspecified,
 		      //s->framesPerBuffer,  /* frames per buffer */
 		      paClipOff, /* we won't output out of range samples so don't bother clipping them */
-		      paSoundSourceCallback,
+		      paSoundIOCallback,
 		      (void *) s );
   if(err != paNoError) {
     DBGPRINTF("could not open portaudio stream because:\n");
@@ -300,13 +300,13 @@ int SoundSource_Open(SoundSource *s, char *device, int smpRate) {
   DBGPRINTF("streamInfo.outputLatency: %f\n", stream_info->outputLatency);
   DBGPRINTF("streamInfo.sampleRate: %f\n", stream_info->sampleRate);
 
-  //  printf("SoundSource_Open: configuration:\n");
+  //  printf("SoundIO_Open: configuration:\n");
   //printf(" pa buffer length:        %d\n", s->snd_buf_len);
 
   return 0;
 }
 
-int SoundSource_Start(SoundSource *s) {
+int SoundIO_Start(SoundIO *s) {
   PaError err;
 
   if(!s->stopped) return 0;
@@ -339,14 +339,14 @@ int SoundSource_Start(SoundSource *s) {
   return 0;
 }
 
-int SoundSource_Stop(SoundSource *s) {
+int SoundIO_Stop(SoundIO *s) {
   PaError err;
   //int i;
 
   if (s->stopped == 1) return 0;
   /* I'd like this to be in the end, but it doesn't work. I suppose that
-     SoundSource_Stop is called more than once (for example through
-     SoundSource_Free), from different threads, and the second call hungs
+     SoundIO_Stop is called more than once (for example through
+     SoundIO_Free), from different threads, and the second call hungs
      because it's not aware of the first. Check, check, check!*/
   s->stopped = 1;
 
@@ -365,11 +365,11 @@ int SoundSource_Stop(SoundSource *s) {
   return 0;
 }
 
-int SoundSource_Close(SoundSource *s) {
+int SoundIO_Close(SoundIO *s) {
   PaError err;
   //int i,res;
 
-  SoundSource_Stop(s);
+  SoundIO_Stop(s);
 
   DBGPRINTF("closing portaudio stream...\n");
   if(Pa_IsStreamActive(s->pa_stream) == paNoError) { /* valid stream */
@@ -393,7 +393,7 @@ int SoundSource_Close(SoundSource *s) {
   return 0;
 }
 
-int SoundSource_SetCallback(SoundSource *s, SoundSourceCallbackProc *proc, void *data) {
+int SoundIO_SetCallback(SoundIO *s, SoundIOCallbackProc *proc, void *data) {
   s->hasCallback = 1;
   s->callback = proc;
   s->callbackData = data;
@@ -402,7 +402,7 @@ int SoundSource_SetCallback(SoundSource *s, SoundSourceCallbackProc *proc, void 
 }
 
 /* set the feedback delay in seconds */
-void SoundSource_SetPlaybackDelay(SoundSource *s, double delay_sec) {
+void SoundIO_SetPlaybackDelay(SoundIO *s, double delay_sec) {
   int delay_samples = (int)
     (delay*s->samplingRate*s->inputParameters.channelCount);
 
@@ -414,12 +414,12 @@ void SoundSource_SetPlaybackDelay(SoundSource *s, double delay_sec) {
   RingBuffer_SetDelay(s->audiorate_buffer, delay_samples);
 }
 
-double SoundSource_GetPlaybackDelay(SoundSource *s) {
+double SoundIO_GetPlaybackDelay(SoundIO *s) {
   if(s!=NULL) return(s->playback_delay_sec);
   return -1.0;
 }
 
-int SoundSource_SetSamplingRate(SoundSource *s, int audio_rate) {
+int SoundIO_SetSamplingRate(SoundIO *s, int audio_rate) {
   s->samplingRate = audio_rate;
   DBGPRINTF("new rate = %d\n", audio_rate);
   //s->framesPerBuffer = s->samplingRate/100; /* 10ms */
@@ -428,20 +428,20 @@ int SoundSource_SetSamplingRate(SoundSource *s, int audio_rate) {
   return 0;
 }
 
-int SoundSource_GetInPos(SoundSource *s) {
+int SoundIO_GetInPos(SoundIO *s) {
   return 0;
 }
 
-int SoundSource_GetOutPos(SoundSource *s) { // from Feedback
+int SoundIO_GetOutPos(SoundIO *s) { // from Feedback
   return 0;
 }
 
-double SoundSource_GetOutTime(SoundSource *s) { // from Feedback
+double SoundIO_GetOutTime(SoundIO *s) { // from Feedback
   return(s->outtime);
 }
 
 /* v19 version returning seconds (double) */
-double SoundSource_GetStreamTime(SoundSource *s) {
+double SoundIO_GetStreamTime(SoundIO *s) {
   double t;
   if(s->stopped) return 0.0;
   if(s->pa_stream == NULL) return 0.0;
@@ -450,15 +450,15 @@ double SoundSource_GetStreamTime(SoundSource *s) {
   return(t - s->starttime);
 }
 
-int SoundSource_IsMuted(SoundSource *s) {
+int SoundIO_IsMuted(SoundIO *s) {
   return s->mute_flag;
 }
 
-void SoundSource_SetDebug(SoundSource *s, int level) {
+void SoundIO_SetDebug(SoundIO *s, int level) {
   if(s != NULL) s->debug = level;
 }
  
-int SoundSource_SetInDevice(SoundSource *s, int idx) {
+int SoundIO_SetInDevice(SoundIO *s, int idx) {
   int ndevs = Pa_GetDeviceCount();
 
   if(0 <= idx && idx < ndevs) {
@@ -470,7 +470,7 @@ int SoundSource_SetInDevice(SoundSource *s, int idx) {
   return -1;
 }
 
-int SoundSource_SetOutDevice(SoundSource *s, int idx) {
+int SoundIO_SetOutDevice(SoundIO *s, int idx) {
   int ndevs = Pa_GetDeviceCount();
 
   if(idx < ndevs) {
@@ -482,14 +482,14 @@ int SoundSource_SetOutDevice(SoundSource *s, int idx) {
   return -1;
 }
 
-int SoundSource_GetInDevice(SoundSource *s) {
+int SoundIO_GetInDevice(SoundIO *s) {
   return s->inputParameters.device;
 }
 
-int SoundSource_GetOutDevice(SoundSource *s) {
+int SoundIO_GetOutDevice(SoundIO *s) {
   return s->outputParameters.device;
 }
 
-//double SoundSource_GetBufLenSec(SoundSource *s) {
+//double SoundIO_GetBufLenSec(SoundIO *s) {
 //  return (double) s->snd_buf_len/(s->inputParameters.channelCount * s->samplingRate);
 //}

@@ -23,7 +23,7 @@
 #ifndef _RECOGNIZER_H_
 #define _RECOGNIZER_H_
 
-#include "SoundSource.h"
+#include "SoundIO.h"
 #include "SoundProc.h"
 #include "FeatureExtraction.h"
 #include "LikelihoodGen.h"
@@ -58,7 +58,7 @@ typedef struct {
 } ResultQueue;
 
 /* DirectResultBuf holds results obtained at the signal processing level,
-   from SoundSource and RTSpeetures (without delays due to look-ahead).
+   from SoundIO and RTSpeetures (without delays due to look-ahead).
    These results are generated for every frame, contrary to the phone
    results. */
 typedef struct {
@@ -98,7 +98,7 @@ typedef struct {
   RecognizerCallbackProc *callback; /* callback procedure for synchronous mode */
 
   /* processing units */
-  SoundSource        *s;  /* audio input */
+  SoundIO            *s;  /* audio input */
   Decimator          *d;  /* resampling (downsampling) */
   FeatureExtraction  *fe; /* MFCC extraction */
   LikelihoodGen      *lg; /* Recurrent Neural Network */
