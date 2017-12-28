@@ -30,7 +30,7 @@ int Rec::loadnet() {
   BinaryBuffer *buf = BinaryBuffer_Create((unsigned char *) &ann[0],
 					  ann.size());
 
-  res = LGLoadANN(r->lg, buf)
+  res = LikelihoodGen_LoadANNFromBuffer(r->lg, buf)
   BinaryBuffer_Free(buf);
 
   return res;

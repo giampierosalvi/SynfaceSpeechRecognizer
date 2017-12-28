@@ -28,7 +28,7 @@
 #include "ViterbiDecoder.h"
 
 /* there is a simpler function in LikelihoodGen.h, but this is the way it's done from Tcl */
-int ReadANN(Recognizer *r, char *filename) {
+int ReadANNAsInTCL(Recognizer *r, char *filename) {
   FILE *f;
   unsigned char *buffer;
   int n;
@@ -44,8 +44,23 @@ int ReadANN(Recognizer *r, char *filename) {
   fclose(f);
   binbuf = BinaryBuffer_Create((char *) buffer, n);
   free(buffer);
-  LGLoadANN(r->lg, binbuf);
+  LikelihoodGen_LoadANNFromBuffer(r->lg, binbuf);
   BinaryBuffer_Free(binbuf);
+  Recognizer_GetOutSym(r);
+
+  return 0;
+}
+
+int ReadANN(Recognizer *r, char *filename) {
+  FILE *f;
+
+  f = fopen(filename, "rb");
+  if (!f) {
+    fprintf(stderr, "cannot open file %s", filename);
+    error();
+  }
+  LikelihoodGen_LoadANNFromFile(r->lg, f);
+  fclose(f);
   Recognizer_GetOutSym(r);
 
   return 0;

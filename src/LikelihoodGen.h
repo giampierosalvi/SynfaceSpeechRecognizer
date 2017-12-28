@@ -25,7 +25,7 @@
 
 #include "RecMath.h"
 #include "RTSim.h"
-
+#include "BinaryBuffer.h"
 
 /* Callback from LikelihoodGen to Recognizer */
 //typedef int (LikelihoodGenCallbackProc)(void *cbData);
@@ -49,7 +49,19 @@ typedef struct {
 LikelihoodGen *LikelihoodGen_Create();
 
 int LikelihoodGen_Free(LikelihoodGen **gptr);
-int LikelihoodGen_LGLoadANN(LikelihoodGen *g, BinaryBuffer *buf);
+/* LikelihoodGen_LoadANN: compiles net into an RTSimulator and
+   creates buffers to hold liklelihood and posterior vectors */
+int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net);
+/* LikelihoodGen_LoadANNFromFile: reads a net from file and
+   calls LikelihoodGen_LoadANN to create necessary structures. */
+int LikelihoodGen_LoadANNFromFile(LikelihoodGen *g, FILE *filep);
+/* LikelihoodGen_LoadANNFromBuffer: reads a net from binary buffer and
+   calls LikelihoodGen_LoadANN to create necessary structures. 
+
+   Call this instead of LikelihoodGen_LoadANNFromFile when you do not
+   have access to the file system, for example when running within tcl
+   in tclwrap mode. */
+int LikelihoodGen_LoadANNFromBuffer(LikelihoodGen *g, BinaryBuffer *buf);
 
 /* consumes a frame and returns the likelihood vector in g->lh,
    waits if no speech avaliable jet, and returns -1 if end of speech */

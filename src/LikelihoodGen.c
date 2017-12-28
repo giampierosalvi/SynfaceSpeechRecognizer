@@ -78,9 +78,8 @@ int LikelihoodGen_Free(LikelihoodGen **gptr) {
 }
 
 /* TODO: this shouldn't access g->numOutputStreams, g->outputStreamSizes */
-int LikelihoodGen_LoadANN(LikelihoodGen *g, BinaryBuffer *buf) {
+int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net) {
   int i;
-  Net *net;
 
   if(g->sim!=NULL) {
     DBGPRINTF("g->sim is not NULL, freing\n");
@@ -90,12 +89,6 @@ int LikelihoodGen_LoadANN(LikelihoodGen *g, BinaryBuffer *buf) {
     }
     FreeRTSim(g->sim);
   }
-  if(g->lh!=NULL) free(g->lh);
-  if(g->pp!=NULL) free(g->pp);
-
-  DBGPRINTF("before ReadNet\n");
-  /* change this to ReadNet() and get FILE *stream from arguments */
-  net = ParseNet(buf);
 
   DBGPRINTF("before CompileRTSim\n");
   g->sim = CompileRTSim(net);     /* in RTSim.c */
@@ -116,12 +109,41 @@ int LikelihoodGen_LoadANN(LikelihoodGen *g, BinaryBuffer *buf) {
   g->inputsize = g->sim->input_stream_size[0];
   g->outputsize = g->sim->output_stream_size[0];
   /* allocate holders */
-  g->lh = malloc(g->outputsize*sizeof(float));
-  g->pp = malloc(g->outputsize*sizeof(float));
+  if(g->lh==NULL)
+    g->lh = malloc(g->outputsize*sizeof(float));
+  else
+    g->lh = realloc(g->lh, g->outputsize*sizeof(float));
+  if(g->pp==NULL)
+    g->pp = malloc(g->outputsize*sizeof(float));
+  else
+    g->pp = realloc(g->pp, g->outputsize*sizeof(float));
+
+  return 0;
+}
+
+int LikelihoodGen_LoadANNFromFile(LikelihoodGen *g, FILE *filep) {
+  Net *net;
+  
+  DBGPRINTF("before ReadNet\n");
+  net = ReadNet(filep);
+  LikelihoodGen_LoadANN(g, net);
 
   DBGPRINTF("before FreeNet\n");
   FreeNet(net);
+  return 0;
+}
 
+int LikelihoodGen_LoadANNFromBuffer(LikelihoodGen *g, BinaryBuffer *buf) {
+  Net *net;
+
+  DBGPRINTF("before ReadNet\n");
+  /* change this to ReadNet() and get FILE *stream from arguments */
+  net = ParseNet(buf);
+
+  LikelihoodGen_LoadANN(g, net);
+  
+  DBGPRINTF("before FreeNet\n");
+  FreeNet(net);
   return 0;
 }
 
@@ -162,7 +184,14 @@ int LikelihoodGen_ConsumeFrame(LikelihoodGen *g) {
 
 /* these are used for starting and stopping, perhaps not complete */
 int LikelihoodGen_Activate(LikelihoodGen *g) {
-  RTSimInputRestart(g->sim);
+  if(!g) return -1;
+  if(!g->sim) return -1;
+
+  /* this used to be done by RTSimInputRestart */
+  g->sim->stopped = 0;
+  g->sim->num_input = 0;
+  g->sim->num_output = 0;
+  g->sim->big_data_warning = 0;
 
   return 0;
 }
