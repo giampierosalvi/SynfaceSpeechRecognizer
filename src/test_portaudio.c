@@ -163,12 +163,17 @@ int stop_stream(PaStream *stream) {
 int main(int argc, char **argv) {
   PaStream *stream;
   int i;
+  PaError err;
 
   //mtrace();
 
   printf("--------- PORTAUDIO TEST -----------------------\n");
   printf("--> initializing PortAudio...\n");
-  Pa_Initialize();
+  err = Pa_Initialize();
+  if(err != paNoError) {
+    printf("Failed to initialize with error code %d, exiting", err);
+    exit(1);
+  }
 
   printf("--> opening and closing default stream ten times...\n");
   for(i=0;i<10;i++) {
@@ -193,7 +198,11 @@ int main(int argc, char **argv) {
   }
 
   printf("--> terminating PortAudio...\n");
-  Pa_Terminate();
+  err = Pa_Terminate();
+  if(err != paNoError) {
+    printf("Failed to terminate with error code %d, exiting", err);
+    exit(1);
+  }
 
   printf("--------- PORTAUDIO TEST ENDED ----------------\n");
   //muntrace();
