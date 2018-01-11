@@ -31,7 +31,7 @@ FeatureExtraction *FeatureExtraction_Create() {
   fe = (FeatureExtraction *) malloc(sizeof(FeatureExtraction));
   fe->speetures = NULL;
 
-  /* copy defaul values */
+  /* copy default values */
   fe->inputrate = INPUTRATE;
   fe->numfilters = NUMFILTERS;
   fe->numceps = NUMCEPS;
