@@ -42,17 +42,17 @@ int paCallback( const void *inputBuffer, void *outputBuffer,
   return 0;
 }
 
-int open_stream(PaStream **streamptr) {
+int open_stream(PaDeviceIndex dev, PaStream **streamptr) {
   PaStreamParameters inputParameters;
   PaStreamParameters outputParameters;
   const PaStreamInfo *stream_info;
   const PaDeviceInfo *dev_info;
   PaStream *stream;
   PaError err;
-  int dev;
+  //int dev;
 
   printf("setting up input device\n");
-  dev = Pa_GetDefaultInputDevice();
+  //dev = Pa_GetDefaultInputDevice();
   dev_info = Pa_GetDeviceInfo(dev);
   inputParameters.device = dev;
   if(dev_info != NULL)
@@ -66,7 +66,7 @@ int open_stream(PaStream **streamptr) {
   inputParameters.hostApiSpecificStreamInfo = NULL;
 
   printf("setting up output device\n");
-  dev = Pa_GetDefaultOutputDevice();
+  //dev = Pa_GetDefaultOutputDevice();
   dev_info = Pa_GetDeviceInfo(dev);
   outputParameters.device = dev;
   if(dev_info != NULL)
@@ -164,21 +164,31 @@ int main(int argc, char **argv) {
   PaStream *stream;
   int i;
   PaError err;
-
+  PaDeviceIndex dev_id;
+  char str[256];
   //mtrace();
 
   printf("--------- PORTAUDIO TEST -----------------------\n");
   printf("--> initializing PortAudio...\n");
   err = Pa_Initialize();
   if(err != paNoError) {
-    printf("Failed to initialize with error code %d, exiting", err);
+    printf("Failed to initialize with error message below, exiting\n");
+    printf("%s\n", Pa_GetErrorText(err));
     exit(1);
   }
 
-  printf("--> opening and closing default stream ten times...\n");
+  for(i=0; i<(int) Pa_GetDeviceCount(); i++) {
+    const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
+    printf("  [%d] %s\n", i, info->name);
+  }
+  printf("--> choose audio device by index...\n");
+  scanf("%d", &dev_id);
+  //fgets(str, 256, stdin); // consumes newline
+
+  printf("--> opening and closing selected stream ten times...\n");
   for(i=0;i<10;i++) {
     printf("--> opening stream...\n");
-    open_stream(&stream);
+    open_stream(dev_id, &stream);
     printf("--> closing stream...\n");
     close_stream(stream);
   }
@@ -186,7 +196,7 @@ int main(int argc, char **argv) {
   printf("--> opening, starting, stopping and closing default stream five times...\n");
   for(i=0;i<5;i++) {
     printf("opening stream...\n");
-    open_stream(&stream);
+    open_stream(dev_id, &stream);
     printf("starting stream...\n");
     start_stream(stream);
     printf("waiting 5 seconds...\n");
@@ -200,7 +210,8 @@ int main(int argc, char **argv) {
   printf("--> terminating PortAudio...\n");
   err = Pa_Terminate();
   if(err != paNoError) {
-    printf("Failed to terminate with error code %d, exiting", err);
+    printf("Failed to terminate with error message below, exiting\n");
+    printf("%s\n", Pa_GetErrorText(err));
     exit(1);
   }
 
