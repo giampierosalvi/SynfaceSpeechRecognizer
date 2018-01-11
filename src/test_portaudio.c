@@ -183,7 +183,6 @@ int main(int argc, char **argv) {
   }
   printf("--> choose audio device by index...\n");
   scanf("%d", &dev_id);
-  //fgets(str, 256, stdin); // consumes newline
 
   printf("--> opening and closing selected stream ten times...\n");
   for(i=0;i<10;i++) {
