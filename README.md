@@ -31,7 +31,7 @@ The code is divided into the following parts:
 * `share`: model and configuration files for a number of languages
 
 ### Building the Code
-The code depends on portaudio and the [NICO toolkit](http://nico.nikkostrom.com/). The following commands will install the dependencies:  
+The code depends on [portaudio](http://www.portaudio.com/) and the [NICO toolkit](http://nico.nikkostrom.com/). The following commands will install the dependencies:  
 ```
 sudo apt install portaudio19-dev
 cd ext
