@@ -30,8 +30,8 @@ The code is divided into the following parts:
 * `tcl`: extensions to build a Tcl package
 * `share`: model and configuration files for a number of languages
 
-### Dependencies
-The code depends on portaudio:  
+### Building the Code
+First install the folliwing dependencies:  
 ```
 sudo apt install portaudio19-dev
 ```
@@ -42,7 +42,6 @@ cd ext
 make nico
 ```
 
-### Building the C code
 If you installed all the dependencies, your should be able to run:
 ```
 cd src
