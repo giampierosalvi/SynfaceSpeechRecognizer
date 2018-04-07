@@ -31,19 +31,15 @@ The code is divided into the following parts:
 * `share`: model and configuration files for a number of languages
 
 ### Building the Code
-First install the folliwing dependencies:  
+The code depends on portaudio and the [NICO toolkit](http://nico.nikkostrom.com/). The following commands will install the dependencies:  
 ```
 sudo apt install portaudio19-dev
-```
-
-The following will download and build the [NICO toolkit](http://nico.nikkostrom.com/):
-```
 cd ext
 make nico
 ```
 
 If you installed all the dependencies, your should be able to run:
 ```
-cd src
+cd ../src
 make
 ```
