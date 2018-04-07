@@ -3,6 +3,8 @@ Speech recognizer for the Synface project. The recognizer uses recurrent neural 
 
 
 ### Main publications
+There is a number of publications describing the system as a whole and experiments with hearing impaired users that can be found [here](http://www.kth.se/profile/giampi/publications/) searching for the term SynFace. However, the publications where the recognizer is described are mainly the ones below:
+
 **Dynamic behaviour of connectionist speech recognition with strong latency constraints**  
 *Giampiero Salvi*  
 Speech Communication, volume 48, issue 7, July 2006, pages 802-818  
