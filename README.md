@@ -37,7 +37,7 @@ The code depends on portaudio:
 sudo apt install portaudio19-dev
 ```
 
-The NICO toolkit:
+The following will download and build the [NICO toolkit](http://nico.nikkostrom.com/):
 ```
 cd ext
 make nico
