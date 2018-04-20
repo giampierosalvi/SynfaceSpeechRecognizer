@@ -1,4 +1,4 @@
-# SynfaceSpeechRecognizer
+# Synface Speech Recognizer
 Speech recognizer for the Synface project. The recognizer uses recurrent neural networks (RNNs) and Hidden Markov Models (HMMs) to classify speech into phonetic classes. This was a very early use of this technology (development started in 1999) that has become mainstream nowadays. In this case, special care has been put to ensure **real-time** and especially **low latency** processing with the hardware available at the time.
 
 ## Synface Architecture
