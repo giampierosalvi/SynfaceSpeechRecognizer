@@ -6,7 +6,7 @@ The Synface application uses speech recognition to animate a synthetic face in r
 
 ![alt text](https://github.com/giampierosalvi/SynfaceSpeechRecognizer/blob/master/doc/synface_architecture.png "Synface Architecture")
 
-The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface](http://www.speech.kth.se/synface/) projects was to use this technology to improve telephone communication for hearing impaired persons. The technology has been commercialized between 2006 and 2016 by the Swedish company Synface AB. It is now used as a software module in [Furhat Robotics](https://www.furhatrobotics.com/). The blocks with colored background are implemented by the code in this repository. Not included here is the code to train the RNN-HMM models.
+The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface](http://www.speech.kth.se/synface/) projects was to use this technology to improve telephone communication for hearing impaired persons. The technology has been commercialized between 2006 and 2016 by the Swedish company Synface AB. It is now used as a software module in [Furhat Robotics](https://www.furhatrobotics.com/). The blocks with colored background are implemented by the code in this repository. Not included here is the code to train the RNN-HMM models and to animate and render the 3D face model.
 
 ### Main publications
 There are many publications describing the system as a whole and experiments with hearing impaired users that can be found [here](http://www.kth.se/profile/giampi/publications/) searching for the term SynFace. However, the publications where the recognizer is described in some details are mainly the ones below:
