@@ -55,9 +55,9 @@ double nrg_GetEnergy(nrg* e,short* buf, int len) {
     e->a = x;
 
     /* peak calculation */
-    if (fabs(buf[i+e->chan]) > e->peak) {
+    if (abs(buf[i+e->chan]) > e->peak) {
 
-      e->peak = fabs(buf[i+e->chan]);
+      e->peak = abs(buf[i+e->chan]);
     }
   }
 
