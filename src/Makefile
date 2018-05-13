@@ -1,9 +1,11 @@
 NICOLIB = ../ext/nico-1.1.2/lib
 #NICOLIB = ../ext/nico
-CC	= gcc
-OPT	= -O -ffast-math 
+# CC	= gcc
+CC	= clang
+OPT	= -O -ffast-math
+ASANFLAGS = -fsanitize=address -O1 -fno-omit-frame-pointer
 CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
-CFLAGS	= $(OPT) -Wall -I$(NICOLIB) -fno-stack-protector
+CFLAGS	= $(OPT) -Wall -I$(NICOLIB) -fno-stack-protector $(ASANFLAGS)
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
 LDLIBS = -lportaudio -lnico -lm
 
