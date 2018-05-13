@@ -70,7 +70,7 @@ const char* audio_getdevinfo(int dev) {
   if(info!=NULL) {
     sprintf(res, "structVersion %d\n", info->structVersion);
     sprintf(res, "name \"%s\"\n", info->name);
-    sprintf(res, "hostApi %s\n", info->hostApi);
+    sprintf(res, "hostApi %d\n", info->hostApi);
     sprintf(res, "maxInputChannels %d\n", info->maxInputChannels);
     sprintf(res, "maxOutputChannels %d\n", info->maxOutputChannels);
     sprintf(res, "defaultLowInputLatency %f\n", info->defaultLowInputLatency);
@@ -79,7 +79,7 @@ const char* audio_getdevinfo(int dev) {
     sprintf(res, "defaultHighOutputLatency %f\n", info->defaultHighOutputLatency);
     sprintf(res, "defaultSampleRate %f\n", info->defaultSampleRate);
   }
-
+  // warning: address of stack memory associated with local variable 'res' returned [-Wreturn-stack-address]
   return res;
 }
 
