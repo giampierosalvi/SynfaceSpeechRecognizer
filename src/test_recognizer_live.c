@@ -183,6 +183,7 @@ void printShortArrayRange(short *a, int len) {
 int display_results(void *data, int idx, int frame_time, double playback_time) {
   Recognizer *r = (Recognizer *) data;
   printf("%d %f %d [%s]\n", frame_time, playback_time, idx, r->ph[idx]); fflush(stdout);
+  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -260,12 +261,12 @@ int main(int argc, char **argv) {
       printf("got %d\n", j); fflush(stdout);
       break;
     case 'e':
-      printf("Audio energy=%f\n", r->s->nrgY);
+      printf("Audio energy=%f\n", nrg_ReturnEnergy(r->s->nrgY));
       break;
     case 't':
       printf("Audio stream time=%f\n", SoundIO_GetStreamTime(r->s));
       printf("countInitialSamples=%d\n", countInitialSamples);
-      printf("r->currFrame=%d\n", r->currFrame);
+      printf("r->currFrame=%ld\n", r->currFrame);
       printf("r->s->hasCallback=%d\n", r->s->hasCallback);
       printf("r->asr_in_level_ratio=%f\n", r->asr_in_level_ratio);
       printf("Audio buffer: min=%d max=%d\n", r->s->audio_sample_min, r->s->audio_sample_max);
