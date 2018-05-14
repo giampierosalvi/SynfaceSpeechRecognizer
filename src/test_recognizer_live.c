@@ -226,22 +226,17 @@ int main(int argc, char **argv) {
   //}
   Recognizer_SetCallback(r, (RecognizerCallbackProc *) &display_results);
     
-  printf("starting the recognizer in synchronous mode...\n"); fflush(stdout);
-  Recognizer_Start(r);
-
   /* test three times to check memory management */
   for(i=0; i<3; i++) {
     //while(1) {
-    printf("\n\nPress any key to test asynchronous mode...\n"); fflush(stdout);
+    printf("starting the recognizer in synchronous mode...\n"); fflush(stdout);
+    Recognizer_Start(r);
+    printf("\n\nPress any key to restart the recognizer...\n"); fflush(stdout);
     ch = getchar();// getchar();
     printf("stopping recognizer...\n"); fflush(stdout);
     Recognizer_Stop(r);
-    printf("starting the recognizer in synchronous mode...\n"); fflush(stdout);
-    Recognizer_Start(r);
   }
   
-  printf("stopping recognizer...\n"); fflush(stdout);
-  Recognizer_Stop(r);
   printf("setting result callback to NULL...\n"); fflush(stdout);
   Recognizer_SetCallback(r, NULL);
   printf("starting the recognizer in asynchronous mode...\n"); fflush(stdout);
