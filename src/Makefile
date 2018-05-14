@@ -4,8 +4,9 @@ NICOLIB = ../ext/nico-1.1.2/lib
 CC	= clang
 OPT	= -O -ffast-math
 ASANFLAGS = -fsanitize=address -O1 -fno-omit-frame-pointer
-CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
-CFLAGS	= $(OPT) -Wall -I$(NICOLIB) -fno-stack-protector $(ASANFLAGS)
+CFLAGSDEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
+CFLAGSNODEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
+CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector $(ASANFLAGS)
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
 LDLIBS = -lportaudio -lnico -lm
 
@@ -37,3 +38,6 @@ clean:
 	rm -f librec.a
 	rm -f $(tests)
 
+# this is what to do to get symbols from AddressSanitizer:
+# export ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-3.8/bin/llvm-symbolizer
+# ASAN_OPTIONS=symbolize=1 ./test_recognizer_live
