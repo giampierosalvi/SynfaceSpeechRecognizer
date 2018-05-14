@@ -36,7 +36,7 @@ void Recognizer_ApplyVolume(Recognizer *r);
 
 /* result queue related functions */
 int ResultQueue_Push(ResultQueue *rq, int idx, int frame_time, double playback_time);
-Result *ResultQueue_Pop(ResultQueue *rq);
+int ResultQueue_Pull(ResultQueue *rq, int *idx, int *frame_time, double *playback_time);
 /* direct result buffer */
 DirectResultBuf* DirectResultBuf_Create(int bufLen);
 int DirectResultBuf_Free(DirectResultBuf **drptr);
@@ -483,7 +483,7 @@ void printmax(float* v,int size, int res) {
 void Recognizer_ConsumeFrame(Recognizer *r) {
   int res = 0;
   int idx, frame_time;
-  float playback_time;
+  double playback_time;
   
   if(r->vd != NULL) {
     res = ViterbiDecoder_ConsumeFrame(r->vd, r->lg->lh,
@@ -528,7 +528,7 @@ void Recognizer_ConsumeFrame(Recognizer *r) {
     /* get results for synchronous processing */
     if(r->callback != NULL) {
       Recognizer_GetResult(r, &idx, &frame_time, &playback_time);
-      r->callback((void *) r, idx, frame_time, (double) playback_time);
+      r->callback((void *) r, idx, frame_time, playback_time);
     }
   }
 }
@@ -682,8 +682,7 @@ int ResultQueue_Push(ResultQueue *rq, int idx, int frame_time, double playback_t
 }
 
 /* returns 1 if there is a result to return or 0 otherwise */
-int Recognizer_GetResult(Recognizer *r, int *idx, int *frame_time, double *playback_time) {
-  ResultQueue *rq = r->rq;
+int ResultQueue_Pull(ResultQueue *rq, int *idx, int *frame_time, double *playback_time) {
 
   if(rq->acc == 0) return 0;
   //res = (Result *) malloc(sizeof(Result));
@@ -695,6 +694,13 @@ int Recognizer_GetResult(Recognizer *r, int *idx, int *frame_time, double *playb
   rq->acc--;
 
   return 1;
+}
+
+/* returns 1 if there is a result to return or 0 otherwise */
+int Recognizer_GetResult(Recognizer *r, int *p_idx, int *p_frame_time, double *p_playback_time) {
+  ResultQueue *rq = r->rq;
+  if(rq==NULL) return 0;
+  return ResultQueue_Pull(rq, p_idx, p_frame_time, p_playback_time);
 }
 
 void Recognizer_SetDebug(Recognizer *r, int level) {

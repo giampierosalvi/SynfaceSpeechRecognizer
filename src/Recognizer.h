@@ -33,6 +33,7 @@
 #include <time.h>
 
 #define MAXQUEUELEN 1024
+/* number of custom symbols besides the RNN output */
 #define NUMEXTRASYM 2
 
 /* RecognizerCallbackProc
