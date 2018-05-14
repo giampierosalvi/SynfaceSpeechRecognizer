@@ -63,25 +63,27 @@ int audio_getnumdevs() {
   return Pa_GetDeviceCount();
 }
 
+/* This function must be revritten to get the allocation right
 const char* audio_getdevinfo(int dev) {
   const PaDeviceInfo *info = Pa_GetDeviceInfo(dev);
-  char res[1024] = "";
-
+  char *tmp[1024]="";
+  
   if(info!=NULL) {
-    sprintf(res, "structVersion %d\n", info->structVersion);
-    sprintf(res, "name \"%s\"\n", info->name);
-    sprintf(res, "hostApi %d\n", info->hostApi);
-    sprintf(res, "maxInputChannels %d\n", info->maxInputChannels);
-    sprintf(res, "maxOutputChannels %d\n", info->maxOutputChannels);
-    sprintf(res, "defaultLowInputLatency %f\n", info->defaultLowInputLatency);
-    sprintf(res, "defaultLowOutputLatency %f\n", info->defaultLowOutputLatency);
-    sprintf(res, "defaultHighInputLatency %f\n", info->defaultHighInputLatency);
-    sprintf(res, "defaultHighOutputLatency %f\n", info->defaultHighOutputLatency);
-    sprintf(res, "defaultSampleRate %f\n", info->defaultSampleRate);
+    sprintf(tmp, "structVersion %d\n", info->structVersion);
+    sprintf(tmp, "name \"%s\"\n", info->name);
+    sprintf(tmp, "hostApi %d\n", info->hostApi);
+    sprintf(tmp, "maxInputChannels %d\n", info->maxInputChannels);
+    sprintf(tmp, "maxOutputChannels %d\n", info->maxOutputChannels);
+    sprintf(tmp, "defaultLowInputLatency %f\n", info->defaultLowInputLatency);
+    sprintf(tmp, "defaultLowOutputLatency %f\n", info->defaultLowOutputLatency);
+    sprintf(tmp, "defaultHighInputLatency %f\n", info->defaultHighInputLatency);
+    sprintf(tmp, "defaultHighOutputLatency %f\n", info->defaultHighOutputLatency);
+    sprintf(tmp, "defaultSampleRate %f\n", info->defaultSampleRate);
   }
-  // warning: address of stack memory associated with local variable 'res' returned [-Wreturn-stack-address]
-  return res;
+  
+  return (const char*) res;
 }
+*/
 
 int audio_getdevinchs(int dev) {
   const PaDeviceInfo *info = Pa_GetDeviceInfo(dev);

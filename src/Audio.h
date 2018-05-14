@@ -41,7 +41,7 @@ int audio_getnumdevs();
     array set a [audio_getdevinfo 1]
   puts $a(name)...
 */
-const char* audio_getdevinfo(int dev);
+//const char* audio_getdevinfo(int dev);
 
 int audio_getdevinchs(int dev);
 int audio_getdevoutchs(int dev);
