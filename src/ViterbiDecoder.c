@@ -36,6 +36,7 @@ ViterbiDecoder *ViterbiDecoder_Create() {
   vd = (ViterbiDecoder *) malloc(sizeof(ViterbiDecoder));
 
   /* set defaults, just to be picky */
+  vd->debug = 0;
   vd->hasPrior = 0;
   vd->nStates = 0;
   vd->maxDelay = 0;

@@ -1,7 +1,7 @@
 NICOLIB = ../ext/nico-1.1.2/lib
 #NICOLIB = ../ext/nico
-# CC	= gcc
-CC	= clang
+CC	= gcc
+# CC	= clang
 OPT	= -O -ffast-math
 ASANFLAGS = -fsanitize=address -O1 -fno-omit-frame-pointer
 CFLAGSDEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector

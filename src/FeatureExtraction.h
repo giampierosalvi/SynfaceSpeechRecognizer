@@ -23,7 +23,7 @@
 #ifndef _FEATUREEXTRACTION_H_
 #define _FEATUREEXTRACTION_H_
 
-#include "Speetures.h"
+#include "Speetures.h" /* from NICO */
 
 /* these are default values */
 #define INPUTRATE     8000

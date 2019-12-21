@@ -177,7 +177,7 @@ void printShortArrayRange(short *a, int len) {
     if (a[i]<smin) smin = a[i];
     if (a[i]>smax) smax = a[i];
   }
-  printf("min=%d max=%d\n", smin, smax);
+  printf("min=%hd max=%hd\n", smin, smax);
 }
 
 int display_results(void *data, int idx, int frame_time, double playback_time) {

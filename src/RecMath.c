@@ -310,7 +310,7 @@ char *basename(char *fname) {
   return begin+1;
 }
 
-/* Create* finctions: call these if the data is already available */
+/* Create* functions: call these if the data is already available */
 /* remember that the indexes have to be in C style already */
 /* inputs must be freed by caller functions */
 SparseMatrix *CreateSparseMatrixWithData(int *from, int *to, float *weight, int *kind, int nElements) {

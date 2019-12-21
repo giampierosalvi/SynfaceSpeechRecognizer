@@ -72,7 +72,7 @@ int ReadANN(Recognizer *r, char *filename) {
 
   f = fopen(filename, "rb");
   if (!f) {
-    fprintf(stderr, "cannot open file %s", filename);
+    fprintf(stderr, "cannot open file %s\n", filename);
     error();
   }
   LikelihoodGen_LoadANNFromFile(r->lg, f);
@@ -90,7 +90,7 @@ int ReadPhPrior(Recognizer *r, char *filename) {
 
   f = fopen(filename, "r");
   if (!f) {
-    fprintf(stderr, "cannot open file %s", filename);
+    fprintf(stderr, "cannot open file %s\n", filename);
     error();
   }
   while(fscanf(f, "%f\n", &tmp[n]) != EOF) n++;
@@ -101,7 +101,7 @@ int ReadPhPrior(Recognizer *r, char *filename) {
   return 0;
 }
 
-int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweight) {
+int ReadGrammar(Recognizer *r, char *modelDir, float gramfact, float insweight) {
   FILE *f;
   char filename[512];
   int n = 0;
@@ -112,7 +112,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
   IntVector *fisStateId;
 
   /* transition matrix */
-  sprintf(filename, "%s.transmat", filebasename);
+  sprintf(filename, "%s/hmm_transmat.txt", modelDir);
   f = fopen(filename, "r");
   if (!f) {
     fprintf(stderr, "cannot open file %s\n", filename);
@@ -130,7 +130,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
   transmat = CreateSparseMatrixWithData(from, to, weight, type, n);
 
   /* state prior */
-  sprintf(filename, "%s.prior", filebasename);
+  sprintf(filename, "%s/hmm_prior.txt", modelDir);
   n=0;
   f = fopen(filename, "r");
   if (!f) {
@@ -138,14 +138,14 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
     error();
   }
   while(fscanf(f, "%f\n", &weight[n]) != EOF) {
-    from[n] *= -1; // this should work with the inf valuse as well
+    from[n] *= -1; // this should work with the inf value as well
     n++;
   }
   fclose(f);
   stPrior = CreateVectorWithData(weight,n);
 
   /* fis state id */
-  sprintf(filename, "%s.map", filebasename);
+  sprintf(filename, "%s/hmm_map.txt", modelDir);
   n=0;
   f = fopen(filename, "r");
   if (!f) {
@@ -169,7 +169,7 @@ void printFloatArray(float *a, int len) {
 }
 void printShortArray(short *a, int len) {
   int i;
-  for(i=0; i<len; i++) printf(" %d", a[i]);
+  for(i=0; i<len; i++) printf(" %hd", a[i]);
 }
 void printShortArrayRange(short *a, int len) {
   short smin = SHRT_MAX;
@@ -179,7 +179,7 @@ void printShortArrayRange(short *a, int len) {
     if (a[i]<smin) smin = a[i];
     if (a[i]>smax) smax = a[i];
   }
-  printf("min=%d max=%d\n", smin, smax);
+  printf("min=%hd max=%hd\n", smin, smax);
 }
 
 int main(int argc, char **argv) {
@@ -190,21 +190,18 @@ int main(int argc, char **argv) {
   short wavbuf[WAVBUFSIZE];
   char stringbuf_ann[1024];
   char stringbuf_pri[1024];
-  char stringbuf_gram[1024];
-  char *infile, *outfile, *dataroot, *lang;
+  char *infile, *outfile, *modelDir;
   int n;
   int offset=120;
 
   //  mtrace();
   srand(0);
-
-  if (argc > 4) {
-    dataroot = argv[1];
-    lang = argv[2];
-    infile = argv[3];
-    outfile = argv[4];
+  if (argc == 4) {
+    modelDir = argv[1];
+    infile = argv[2];
+    outfile = argv[3];
   } else {
-    fprintf(stderr,"usage: %s <data dir> <lang (sv,en,de,fl)> <input audio file> <output lab file>\n",argv[0]);
+    fprintf(stderr,"usage: %s <model dir> <input audio file> <output lab file>\n",argv[0]);
     exit(1);
   }
 
@@ -228,17 +225,16 @@ int main(int argc, char **argv) {
   r->fe->lifter = 22.0;
 
  
-  sprintf(stringbuf_ann,"%s/spdatnet_%s.rtd",dataroot,lang);
-  sprintf(stringbuf_pri,"%s/ph_prior_%s.txt",dataroot,lang);
-  sprintf(stringbuf_gram,"%s/netsimple_%s",dataroot,lang);
+  sprintf(stringbuf_ann,"%s/rnn.rtd",modelDir);
+  sprintf(stringbuf_pri,"%s/phone_prior.txt",modelDir);
 
-  printf("%s\n%s\n%s\n",stringbuf_ann,stringbuf_pri,stringbuf_gram);
+  printf("%s\n%s\n",stringbuf_ann,stringbuf_pri);
   //  printf("configuring neural network...\n"); fflush(stdout);
   ReadANN(r, stringbuf_ann);
   ReadPhPrior(r, stringbuf_pri);
   //  printf("configuring Viterbi decoder...\n"); fflush(stdout);
   r->vd = ViterbiDecoder_Create();
-  ReadGrammar(r, stringbuf_gram, 1, 0);
+  ReadGrammar(r, modelDir, 1, 0);
   ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
   Recognizer_SetLookahead(r, 3);
 
