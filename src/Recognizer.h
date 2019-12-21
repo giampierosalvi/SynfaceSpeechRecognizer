@@ -110,8 +110,20 @@ typedef struct {
 } Recognizer;
 
 /* high level functions (they should be used by the application)*/
-/* Create recognizer does not load the ANN */
+/* Create recognizer does not load the models */
 Recognizer *Recognizer_Create(int liveAudio);
+
+/* This function load the models. Model files are expected to be in the
+   specified model directory in a fixed format:
+ * parameters.conf: feature extraction parameters
+ * rnn.rtd: recurrent neural network in NICO format
+ * phone_prior.txt: a priori probabilities for the phones in rnn.rtd
+ * hmm_transmat.txt: HMM transition matrix
+ * hmm_prior.txt: HMM a priori state probabilities
+ * hmm_map.txt: mapping from state to phoneme index
+ */
+int Recognizer_LoadModel(Recognizer *r, char* dir);
+
 int Recognizer_GetOutSym(Recognizer *r);
 int Recognizer_Free(Recognizer **rptr);
 int Recognizer_Start(Recognizer *r);

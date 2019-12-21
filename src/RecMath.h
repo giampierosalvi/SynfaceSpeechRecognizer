@@ -116,38 +116,42 @@ LogFloat safeLog(float x);
 /* real module */
 int Mod(int a, int d);
 
-/* Loads a sparse matrix from a text file, allocating memory  */
-/* for it; the file format is, for each line:                 */
-/* row column value kind                                      */
-SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat);
+
+/* Load function: the number of elements is inferred from the file 
+ * File formats:
+    IntVector and Vector: one element per row
+    SparseMatrix: for each line: row column value kind */
+IntVector *IntVector_LoadFromFilename(char *filename);
+Vector *Vector_LoadFromFilename(char *filename);
+SparseMatrix *SparseMatrix_LoadFromFilename(char *fn, int matlabformat);
 
 
 /* Allocate space for vectors and sparse matrices */
-Vector *CreateVector(int nels);
-IntVector *CreateIntVector(int nels);
+Vector *Vector_Create(int nels);
+IntVector *IntVector_Create(int nels);
 /* nels specifies, for each column, the number of nonzero elements.
  It is the responsibility of the caller to free it. */
-SparseMatrix *CreateSparseMatrix(int ncols, int *nels);
+SparseMatrix *SparseMatrix_Create(int ncols, int *nels);
 
 /* Create* functions: call these if the data is already available;
    the data is copied and it is up to the calling procedure to free
    the original vectors */
-SparseMatrix *CreateSparseMatrixWithData(int *from, int *to, float *weight,
+SparseMatrix *SparseMatrix_CreateWithData(int *from, int *to, float *weight,
 				  int *kind, int nElements);
-Vector *CreateVectorWithData(float *data, int n);
-IntVector *CreateIntVectorWithData(int *data, int n);
+Vector *Vector_CrearteWithData(float *data, int n);
+IntVector *IntVector_CreateWithData(int *data, int n);
 
 /* Deallocate space for sparse matrix */
-void FreeSparseMatrix(SparseMatrix **mptr);
-SparseMatrix *DuplicateSparseMatrix(SparseMatrix *in);
-int SparseMatrixEqual(SparseMatrix *in1, SparseMatrix *in2);
+void SparseMatrix_Free(SparseMatrix **mptr);
+SparseMatrix *SparseMatrix_Duplicate(SparseMatrix *in);
+int SparseMatrix_Equal(SparseMatrix *in1, SparseMatrix *in2);
 
 /* Deallocate space for matrix */
 //void FreeMatrix(Matrix *m);
 
 /* Deallocate space for vector */
-void FreeVector(Vector **vptr);
-void FreeIntVector(IntVector **vptr);
+void Vector_Free(Vector **vptr);
+void IntVector_Free(IntVector **vptr);
 void FreeCharVector(CharVector **vptr);
 
 /* Display a (sparse) matrix */

@@ -69,7 +69,7 @@ int LikelihoodGen_Free(LikelihoodGen **gptr) {
   //free(g->outputStreamSizes); /* check that it's needed */
   if(g->lh!=NULL) free(g->lh);
   if(g->pp!=NULL) free(g->pp);
-  if(g->phPrior!=NULL) FreeVector(&g->phPrior);
+  if(g->phPrior!=NULL) Vector_Free(&g->phPrior);
   DBGPRINTF("freing LG strtucture...\n");
   free(g);
   *gptr = NULL;
@@ -214,7 +214,7 @@ int LikelihoodGen_SetPhPrior(LikelihoodGen *g, Vector *phPrior) {
 
   if(g==NULL) return -1;
   if(phPrior==NULL) return -1;
-  if(g->phPrior != NULL) FreeVector(&g->phPrior);
+  if(g->phPrior != NULL) Vector_Free(&g->phPrior);
   g->phPrior = phPrior;
 
   return 0;

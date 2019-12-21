@@ -39,7 +39,7 @@ int Mod(int a, int d) {
 }
 
 /* Allocate space for sparse matrix (used by LoadSparseMatrix) */
-SparseMatrix *CreateSparseMatrix(int ncols, int *nels) {
+SparseMatrix *SparseMatrix_Create(int ncols, int *nels) {
   int i;
   SparseMatrix *m;
 
@@ -69,12 +69,12 @@ SparseMatrix *CreateSparseMatrix(int ncols, int *nels) {
   return m;
 }
 
-SparseMatrix *DuplicateSparseMatrix(SparseMatrix *in) {
+SparseMatrix *SparseMatrix_Duplicate(SparseMatrix *in) {
   SparseMatrix *out;
   int i,j;
 
   if(in == NULL) return NULL;
-  out = CreateSparseMatrix(in->ncols, in->nels);
+  out = SparseMatrix_Create(in->ncols, in->nels);
   for(i=0;i<in->ncols;i++) {
     for(j=0;j<in->nels[i];j++) {
       out->data[i][j] = in->data[i][j];
@@ -86,7 +86,7 @@ SparseMatrix *DuplicateSparseMatrix(SparseMatrix *in) {
   return out;
 }
 
-int SparseMatrixEqual(SparseMatrix *in1, SparseMatrix *in2) {
+int SparseMatrix_Equal(SparseMatrix *in1, SparseMatrix *in2) {
   int i,j;
 
   if(in1 == NULL || in2 == NULL) return -1;
@@ -105,7 +105,7 @@ int SparseMatrixEqual(SparseMatrix *in1, SparseMatrix *in2) {
 
 
 /* Allocate space for vector */
-Vector *CreateVector(int nels) {
+Vector *Vector_Create(int nels) {
   Vector *v;
 
   DBGPRINTF("malloc object\n");
@@ -117,7 +117,7 @@ Vector *CreateVector(int nels) {
 }
 
 /* Allocate space for vector */
-IntVector *CreateIntVector(int nels) {
+IntVector *IntVector_Create(int nels) {
   IntVector *v;
 
   DBGPRINTF("malloc object\n");
@@ -128,8 +128,62 @@ IntVector *CreateIntVector(int nels) {
   return v;
 }
 
+IntVector *IntVector_LoadFromFilename(char *filename) {
+  int *temp; /* holds the data while reading from file */
+  FILE *f;
+  int n=0, preallocn=1024;
+  IntVector *res;
+  
+  f = fopen(filename, "r");
+  if (!f) {
+    fprintf(stderr, "cannot open file %s\n", filename);
+    return NULL;
+  }
+  temp = (int *) malloc(preallocn * sizeof(int));
+  while(!feof(f)) {
+    fscanf(f, "%d\n", &temp[n]);
+    n++;
+    if(n==preallocn) {
+      preallocn += 1024;
+      temp = (int *) realloc(temp, preallocn * sizeof(int));
+    }
+  }
+  fclose(f);
+  res = IntVector_CreateWithData(temp,n);
+  free(temp);
+  return res;
+}
+
+Vector *Vector_LoadFromFilename(char *filename) {
+  float *temp; /* holds the data while reading from file */
+  FILE *f;
+  int n=0, preallocn=1024;
+  Vector *res;
+  
+  f = fopen(filename, "r");
+  if (!f) {
+    fprintf(stderr, "cannot open file %s\n", filename);
+    return NULL;
+  }
+  temp = (float *) malloc(preallocn * sizeof(float));
+  while(!feof(f)) {
+    fscanf(f, "%f\n", &temp[n]);
+    n++;
+    if(n==preallocn) {
+      preallocn += 1024;
+      temp = (float *) realloc(temp, preallocn * sizeof(float));
+    }
+  }
+  fclose(f);
+  res = Vector_CrearteWithData(temp,n);
+  free(temp);
+  return res;
+}
+
+
+
 /* Deallocate space for sparse matrix */
-void FreeSparseMatrix(SparseMatrix **mptr) {
+void SparseMatrix_Free(SparseMatrix **mptr) {
   SparseMatrix *m = *mptr;
   int i;
 
@@ -160,7 +214,7 @@ void FreeSparseMatrix(SparseMatrix **mptr) {
 }
 
 /* Deallocate space for vector */
-void FreeVector(Vector **vptr) {
+void Vector_Free(Vector **vptr) {
   Vector *v = *vptr;
 
   if(v==NULL) return;
@@ -174,7 +228,7 @@ void FreeVector(Vector **vptr) {
 }
 
 /* Deallocate space for vector */
-void FreeIntVector(IntVector **vptr) {
+void IntVector_Free(IntVector **vptr) {
   IntVector *v = *vptr;
 
   if(v==NULL) return;
@@ -187,7 +241,7 @@ void FreeIntVector(IntVector **vptr) {
   DBGPRINTF("exiting\n");
 }
 
-SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat) {
+SparseMatrix *SparseMatrix_LoadFromFilename(char *fn, int matlabformat) {
   FILE *fp;
   int *from;
   int *to;
@@ -204,13 +258,6 @@ SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat) {
   weight = (float *) malloc(allocated*sizeof(float));
   kind   = (int *)   malloc(allocated*sizeof(int));
   while (!feof(fp)) {
-    if(n>=allocated) {
-      allocated += allocstep;
-      from   = (int *)   realloc(from, allocated*sizeof(int));
-      to     = (int *)   realloc(to, allocated*sizeof(int));
-      weight = (float *) realloc(weight, allocated*sizeof(float));
-      kind   = (int *)   realloc(kind, allocated*sizeof(int));
-    }
     fscanf(fp,"%d %d %f %d\n",&(from[n]),&(to[n]),
 	   &(weight[n]),&(kind[n]));
     /* printf("line: %d %d %f\n",tr[n].from,tr[n].to,tr[n].weight); */
@@ -218,15 +265,17 @@ SparseMatrix *LoadSparseMatrix(char *fn, int matlabformat) {
       from[n]--; to[n]--; /* C style indexes from 0 */
     }
     n++;
+    if(n==allocated) {
+      allocated += allocstep;
+      from   = (int *)   realloc(from, allocated*sizeof(int));
+      to     = (int *)   realloc(to, allocated*sizeof(int));
+      weight = (float *) realloc(weight, allocated*sizeof(float));
+      kind   = (int *)   realloc(kind, allocated*sizeof(int));
+    }
   }
   if(fclose(fp)) Error("Can't close file",fn);
 
-  from   = (int *)   realloc(from, n*sizeof(int));
-  to     = (int *)   realloc(to, n*sizeof(int));
-  weight = (float *) realloc(weight, n*sizeof(float));
-  kind   = (int *)   realloc(kind, n*sizeof(int));
-
-  smat = CreateSparseMatrixWithData(from, to, weight, kind, n);
+  smat = SparseMatrix_CreateWithData(from, to, weight, kind, n);
   free(from); free(to); free(weight); free(kind);
 
   return smat;
@@ -313,7 +362,7 @@ char *basename(char *fname) {
 /* Create* functions: call these if the data is already available */
 /* remember that the indexes have to be in C style already */
 /* inputs must be freed by caller functions */
-SparseMatrix *CreateSparseMatrixWithData(int *from, int *to, float *weight, int *kind, int nElements) {
+SparseMatrix *SparseMatrix_CreateWithData(int *from, int *to, float *weight, int *kind, int nElements) {
   int i,maxto=0,*maxfrom,rowidx;
   SparseMatrix *smat;
 
@@ -324,7 +373,7 @@ SparseMatrix *CreateSparseMatrixWithData(int *from, int *to, float *weight, int 
   /* counts the number of elements for each row */
   for(i=0;i<nElements;i++) maxfrom[to[i]]++;
   /* Allocate space for the sparse matrix */
-  smat = CreateSparseMatrix(maxto, maxfrom);
+  smat = SparseMatrix_Create(maxto, maxfrom);
   /* fill it with values */
   for(i=0;i<nElements;i++) {
     rowidx = --maxfrom[to[i]];
@@ -339,11 +388,11 @@ SparseMatrix *CreateSparseMatrixWithData(int *from, int *to, float *weight, int 
 
 /* the reason to copy the data, instead of just pointing
    to it, is to be consistent with AcquireSparseMatrix */
-Vector *CreateVectorWithData(float *data, int n) {
+Vector *Vector_CrearteWithData(float *data, int n) {
   int i;
   Vector *v;
 
-  v = CreateVector(n);
+  v = Vector_Create(n);
   for(i=0;i<n;i++) v->data[i] = data[i];
 
   return v;
@@ -351,11 +400,11 @@ Vector *CreateVectorWithData(float *data, int n) {
 
 /* the reason to copy the data, instead of just pointing
    to it, is to be consistent with AcquireSparseMatrix */
-IntVector *CreateIntVectorWithData(int *data, int n) {
+IntVector *IntVector_CreateWithData(int *data, int n) {
   int i;
   IntVector *v;
 
-  v = CreateIntVector(n);
+  v = IntVector_Create(n);
   for(i=0;i<n;i++) v->data[i] = data[i];
 
   return v;

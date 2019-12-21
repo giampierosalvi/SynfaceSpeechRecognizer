@@ -94,7 +94,7 @@ int ReadPhPrior(Recognizer *r, char *filename) {
   while(fscanf(f, "%f\n", &tmp[n]) != EOF) n++;
   fclose(f);
 
-  pp = CreateVectorWithData(tmp,n);
+  pp = Vector_CrearteWithData(tmp,n);
   LikelihoodGen_SetPhPrior(r->lg,pp);
   return 0;
 }
@@ -125,7 +125,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
     n++;
   }
   fclose(f);
-  transmat = CreateSparseMatrixWithData(from, to, weight, type, n);
+  transmat = SparseMatrix_CreateWithData(from, to, weight, type, n);
 
   /* state prior */
   sprintf(filename, "%s.prior", filebasename);
@@ -140,7 +140,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
     n++;
   }
   fclose(f);
-  stPrior = CreateVectorWithData(weight,n);
+  stPrior = Vector_CrearteWithData(weight,n);
 
   /* fis state id */
   sprintf(filename, "%s.map", filebasename);
@@ -155,7 +155,7 @@ int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweig
     n++;
   }
   fclose(f);
-  fisStateId = CreateIntVectorWithData(from,n);
+  fisStateId = IntVector_CreateWithData(from,n);
 
   ViterbiDecoder_SetGrammar(r->vd,transmat,stPrior,fisStateId);
   return 0;

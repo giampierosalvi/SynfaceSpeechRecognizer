@@ -100,13 +100,13 @@ int ViterbiDecoder_FreeGrammar(ViterbiDecoder *vd) {
   if(vd == NULL) return 0;
 
   DBGPRINTF("freing vd->transmat if necessary...\n");
-  FreeSparseMatrix(&vd->transmat);
+  SparseMatrix_Free(&vd->transmat);
 
   DBGPRINTF("freing vd->stPrior if necessary...\n");
-  FreeVector(&vd->stPrior);
+  Vector_Free(&vd->stPrior);
 
   DBGPRINTF("freing vd->fisStateId if necessary...\n");
-  FreeIntVector(&vd->fisStateId);
+  IntVector_Free(&vd->fisStateId);
 
   if(vd->delta != NULL) {
     DBGPRINTF("vd->delta not NULL, freing...\n");
@@ -153,7 +153,7 @@ int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int stat
   ViterbiDecoder_FreeGrammar(vd);
 
   DBGPRINTF("creating state prior...\n");
-  vd->stPrior = CreateVector(nStates);
+  vd->stPrior = Vector_Create(nStates);
   for(ph=0; ph<nPhones; ph++) {
     fprintf(stderr, "[%d]", ph); fflush(stdout);
     vd->stPrior->data[ph*statesPerModel] = phoneTransWeight;
@@ -161,7 +161,7 @@ int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int stat
   fprintf(stderr, "\n"); fflush(stdout);
 
   DBGPRINTF("creating state to phone mapping...\n");
-  vd->fisStateId = CreateIntVector(nStates);
+  vd->fisStateId = IntVector_Create(nStates);
   for(st=0; st<nStates; st++) {
     fprintf(stderr, "[%d]", st); fflush(stdout);
     vd->fisStateId->data[st] = st/statesPerModel;
@@ -205,7 +205,7 @@ int ViterbiDecoder_CreateAndSetGrammar(ViterbiDecoder *vd, int nPhones, int stat
   fprintf(stderr, "\n"); fflush(stdout);
   
   DBGPRINTF("creating new grammar structures...\n");
-  vd->transmat = CreateSparseMatrixWithData(from, to, weight, kind, nTrans);
+  vd->transmat = SparseMatrix_CreateWithData(from, to, weight, kind, nTrans);
   vd->nStates = nStates;
 
   /* free temporary structures */

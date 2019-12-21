@@ -96,7 +96,7 @@ int ReadPhPrior(Recognizer *r, char *filename) {
   while(fscanf(f, "%f\n", &tmp[n]) != EOF) n++;
   fclose(f);
 
-  pp = CreateVectorWithData(tmp,n);
+  pp = Vector_CrearteWithData(tmp,n);
   LikelihoodGen_SetPhPrior(r->lg,pp);
   return 0;
 }
@@ -127,7 +127,7 @@ int ReadGrammar(Recognizer *r, char *modelDir, float gramfact, float insweight) 
     n++;
   }
   fclose(f);
-  transmat = CreateSparseMatrixWithData(from, to, weight, type, n);
+  transmat = SparseMatrix_CreateWithData(from, to, weight, type, n);
 
   /* state prior */
   sprintf(filename, "%s/hmm_prior.txt", modelDir);
@@ -142,7 +142,7 @@ int ReadGrammar(Recognizer *r, char *modelDir, float gramfact, float insweight) 
     n++;
   }
   fclose(f);
-  stPrior = CreateVectorWithData(weight,n);
+  stPrior = Vector_CrearteWithData(weight,n);
 
   /* fis state id */
   sprintf(filename, "%s/hmm_map.txt", modelDir);
@@ -157,7 +157,7 @@ int ReadGrammar(Recognizer *r, char *modelDir, float gramfact, float insweight) 
     n++;
   }
   fclose(f);
-  fisStateId = CreateIntVectorWithData(from,n);
+  fisStateId = IntVector_CreateWithData(from,n);
 
   ViterbiDecoder_SetGrammar(r->vd,transmat,stPrior,fisStateId);
   return 0;
@@ -188,8 +188,6 @@ int main(int argc, char **argv) {
   double res_playback_time;
   FILE *ff = NULL, *of = NULL;
   short wavbuf[WAVBUFSIZE];
-  char stringbuf_ann[1024];
-  char stringbuf_pri[1024];
   char *infile, *outfile, *modelDir;
   int n;
   int offset=120;
@@ -212,32 +210,12 @@ int main(int argc, char **argv) {
   }
 
   r = Recognizer_Create(0);
-
-  //  printf("configuring feature extraction...\n"); fflush(stdout);
-  r->fe->inputrate = 8000;
-  r->fe->numfilters = 24;
-  r->fe->numceps = 12;
-  r->fe->lowfreq = 0.0;
-  r->fe->hifreq = 4000.0;
-  r->fe->framestep = 0.01;
-  r->fe->framelen = 0.025;
-  r->fe->preemph = 0.97;
-  r->fe->lifter = 22.0;
-
- 
-  sprintf(stringbuf_ann,"%s/rnn.rtd",modelDir);
-  sprintf(stringbuf_pri,"%s/phone_prior.txt",modelDir);
-
-  printf("%s\n%s\n",stringbuf_ann,stringbuf_pri);
-  //  printf("configuring neural network...\n"); fflush(stdout);
-  ReadANN(r, stringbuf_ann);
-  ReadPhPrior(r, stringbuf_pri);
-  //  printf("configuring Viterbi decoder...\n"); fflush(stdout);
-  r->vd = ViterbiDecoder_Create();
-  ReadGrammar(r, modelDir, 1, 0);
-  ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
-  Recognizer_SetLookahead(r, 3);
-
+  
+  if(Recognizer_LoadModel(r, modelDir) != 0) {
+    fprintf(stderr, "Failed to load model files, aborting.");
+    exit(1);
+  }         
+  
   //  printf("starting the recognizer...\n"); fflush(stdout);
   Recognizer_Start(r);
 
