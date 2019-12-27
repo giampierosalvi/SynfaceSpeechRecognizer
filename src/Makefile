@@ -8,13 +8,16 @@ CFLAGSDEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
 CFLAGSNODEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
 CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector $(ASANFLAGS)
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
-LDLIBS = -lportaudio -lnico -lm
+LDLIBS = -lportaudio -lnico -lm -lsndfile
 
 modules = Audio.o BinaryBuffer.o Common.o FeatureExtraction.o LikelihoodGen.o \
 	nrg.o RecMath.o Recognizer.o RingBuffer.o SoundProc.o \
 	SoundIO.o ViterbiDecoder.o
 
 tests = test_playback test_portaudio test_recognizer_live test_recognizer_offline
+
+debug: CFLAGS += -DDEBUG -g
+debug: test_recognizer_offline
 
 all: librec.a $(tests)
 
