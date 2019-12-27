@@ -167,7 +167,7 @@ void printFloatArray(float *a, int len) {
 }
 void printShortArray(short *a, int len) {
   int i;
-  for(i=0; i<len; i++) printf(" %d", a[i]);
+  for(i=0; i<len; i++) printf(" %hd", a[i]);
 }
 void printShortArrayRange(short *a, int len) {
   short smin = SHRT_MAX;
@@ -177,6 +177,7 @@ void printShortArrayRange(short *a, int len) {
     if (a[i]<smin) smin = a[i];
     if (a[i]>smax) smax = a[i];
   }
+
   printf("min=%hd max=%hd\n", smin, smax);
 }
 
