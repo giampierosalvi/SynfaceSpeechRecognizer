@@ -132,9 +132,9 @@ int Recognizer_LoadModel(Recognizer *r, char* dir) {
   FILE *f;
   Vector *pp;
   float gramfact, insweight;
-  SparseMatrix *hmmTransmat;
-  Vector *hmmStPrior;
-  IntVector *hmmFisStateId;
+  SparseMatrix *hmmTransmat = NULL;
+  Vector *hmmStPrior = NULL;
+  IntVector *hmmFisStateId = NULL;
 
   if(dirlen>2000) {
     fprintf(stderr, "maximum dir len is 2000, received %d", dirlen);
