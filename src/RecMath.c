@@ -140,8 +140,7 @@ IntVector *IntVector_LoadFromFilename(char *filename) {
     return NULL;
   }
   temp = (int *) malloc(preallocn * sizeof(int));
-  while(!feof(f)) {
-    fscanf(f, "%d\n", &temp[n]);
+  while(fscanf(f, "%d\n", &temp[n]) == 1) {
     n++;
     if(n==preallocn) {
       preallocn += 1024;
@@ -166,8 +165,7 @@ Vector *Vector_LoadFromFilename(char *filename) {
     return NULL;
   }
   temp = (float *) malloc(preallocn * sizeof(float));
-  while(!feof(f)) {
-    fscanf(f, "%f\n", &temp[n]);
+  while(fscanf(f, "%f\n", &temp[n]) == 1) {
     n++;
     if(n==preallocn) {
       preallocn += 1024;
@@ -257,9 +255,8 @@ SparseMatrix *SparseMatrix_LoadFromFilename(char *fn, int matlabformat) {
   to     = (int *)   malloc(allocated*sizeof(int));
   weight = (float *) malloc(allocated*sizeof(float));
   kind   = (int *)   malloc(allocated*sizeof(int));
-  while (!feof(fp)) {
-    fscanf(fp,"%d %d %f %d\n",&(from[n]),&(to[n]),
-	   &(weight[n]),&(kind[n]));
+  while (4 == fscanf(fp,"%d %d %f %d\n",&(from[n]),&(to[n]),
+	   &(weight[n]),&(kind[n]))) {
     /* printf("line: %d %d %f\n",tr[n].from,tr[n].to,tr[n].weight); */
     if(matlabformat) {
       from[n]--; to[n]--; /* C style indexes from 0 */
