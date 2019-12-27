@@ -23,6 +23,7 @@
 #include "Recognizer.h"
 #include <unistd.h> // for sleep()
 #include <limits.h>
+#include <sndfile.h> /* opening and reading sound files */
 
 //#include <mcheck.h>
 
@@ -186,7 +187,9 @@ int main(int argc, char **argv) {
   Recognizer *r = NULL;
   int j, res_idx, res_frame_time, prev_frame_time = 0;
   double res_playback_time;
-  FILE *ff = NULL, *of = NULL;
+  SNDFILE *ff = NULL;
+  SF_INFO sf_info;
+  FILE *of = NULL;
   short wavbuf[WAVBUFSIZE];
   char *infile, *outfile, *modelDir;
   int n;
@@ -203,16 +206,20 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  ff = fopen(infile,"rb");
+  ff = sf_open(infile, SFM_READ, &sf_info);
   if (ff == NULL) {
-    printf("failed to open file %s, exiting\n",infile);
+    fprintf(stderr, "failed to open file %s, exiting\n",infile);
+    fprintf(stderr, "%s\n", sf_strerror(ff));
     exit(1);
+  } else {
+    fprintf(stderr, "opened sound file with [n=%d, sf=%d, ch=%d, fmt=%d]\n",
+            sf_info.frames, sf_info.samplerate, sf_info.channels, sf_info.format);
   }
 
   r = Recognizer_Create(0);
   
   if(Recognizer_LoadModel(r, modelDir) != 0) {
-    fprintf(stderr, "Failed to load model files, aborting.");
+    fprintf(stderr, "Failed to load model files, aborting.\n");
     exit(1);
   }         
   
@@ -222,8 +229,7 @@ int main(int argc, char **argv) {
   of = fopen(outfile,"w");
 
   j=0;
-  while (!feof(ff)) {
-    n = fread(wavbuf, sizeof(short), WAVBUFSIZE, ff);
+  while (n=sf_read_short(ff, wavbuf, WAVBUFSIZE)) {
     // printf("pushing %d samples\n",n);
     Recognizer_PushSpeech(r,wavbuf,n);
     while(Recognizer_GetResult(r, &res_idx, &res_frame_time, &res_playback_time)) {
@@ -233,6 +239,7 @@ int main(int argc, char **argv) {
       j++;
     }
   }
+  sf_close(ff);
   fclose(of);
   //  printf("got %d\n", j); fflush(stdout);
   
