@@ -8,7 +8,7 @@ CFLAGSDEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
 CFLAGSNODEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
 CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector $(ASANFLAGS)
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
-LDLIBS = -lportaudio -lnico -lm -lsndfile
+LDLIBS = -lportaudio -lnico -lm
 
 modules = Audio.o BinaryBuffer.o Common.o FeatureExtraction.o LikelihoodGen.o \
 	nrg.o RecMath.o Recognizer.o RingBuffer.o SoundProc.o \
@@ -28,7 +28,7 @@ test_recognizer_live: test_recognizer_live.o $(modules)
 	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
 
 test_recognizer_offline: test_recognizer_offline.o $(modules)
-	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
+	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS) -lsndfile
 
 test_playback: test_playback.o $(modules)
 	$(CC) $(OPT) $(CFLAGS) $(modules) $< -o $@ $(LDFLAGS) $(LDLIBS)
