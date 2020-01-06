@@ -1,0 +1,4 @@
+clang -g -O -ffast-math -Wall -I../ext/nico-1.1.2/lib -D DEBUG -fno-stack-protector -fsanitize=address -O1 -fno-omit-frame-pointer   -c -o Audio.o Audio.c
+make: clang: Command not found
+<builtin>: recipe for target 'Audio.o' failed
+make: *** [Audio.o] Error 127

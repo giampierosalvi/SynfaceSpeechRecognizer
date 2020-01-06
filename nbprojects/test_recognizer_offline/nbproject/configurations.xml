@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="100">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="src"
+                     displayName="src"
+                     projectFiles="true"
+                     root="../../Documents/SynfaceSpeechRecognizer/src">
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/Audio.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/Audio.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/BinaryBuffer.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/BinaryBuffer.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/Common.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/Common.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/FeatureExtraction.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/FeatureExtraction.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/LikelihoodGen.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/LikelihoodGen.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/LowpassFilter.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/RecMath.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/RecMath.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/Recognizer.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/Recognizer.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/RingBuffer.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/RingBuffer.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/SoundIO.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/SoundIO.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/SoundProc.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/SoundProc.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/ViterbiDecoder.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/ViterbiDecoder.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/nrg.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/nrg.h</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/test_playback.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/test_portaudio.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/test_recognizer_live.c</itemPath>
+        <itemPath>../../Documents/SynfaceSpeechRecognizer/src/test_recognizer_offline.c</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <df root="../../src" name="0">
+      <in>Audio.c</in>
+      <in>Audio.h</in>
+      <in>BinaryBuffer.c</in>
+      <in>BinaryBuffer.h</in>
+      <in>Common.c</in>
+      <in>Common.h</in>
+      <in>Configuration.c</in>
+      <in>Configuration.h</in>
+      <in>FeatureExtraction.c</in>
+      <in>FeatureExtraction.h</in>
+      <in>LikelihoodGen.c</in>
+      <in>LikelihoodGen.h</in>
+      <in>LowpassFilter.h</in>
+      <in>RecMath.c</in>
+      <in>RecMath.h</in>
+      <in>Recognizer.c</in>
+      <in>Recognizer.h</in>
+      <in>RingBuffer.c</in>
+      <in>RingBuffer.h</in>
+      <in>SoundIO.c</in>
+      <in>SoundIO.h</in>
+      <in>SoundProc.c</in>
+      <in>SoundProc.h</in>
+      <in>ViterbiDecoder.c</in>
+      <in>ViterbiDecoder.h</in>
+      <in>nrg.c</in>
+      <in>nrg.h</in>
+      <in>test_feature_extraction.c</in>
+      <in>test_playback.c</in>
+      <in>test_portaudio.c</in>
+      <in>test_recognizer_live.c</in>
+      <in>test_recognizer_offline.c</in>
+    </df>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>/home/giampi/Documents/SynfaceSpeechRecognizer/src/Makefile</itemPath>
+      <itemPath>../../Documents/SynfaceSpeechRecognizer/src/test_recognizer_offline</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../../src</Elem>
+  </sourceRootList>
+  <projectmakefile></projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-g -O -ffast-math -fsanitize=address -O1 -g"/>
+        <element flagsID="1"
+                 commonFlags="-mtune=generic -march=x86-64 -g -O -O1 -ffast-math -fsanitize=address"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>../../src</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>../../src/test_recognizer_offline</executablePath>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand></preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Audio.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/BinaryBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Common.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/FeatureExtraction.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/LikelihoodGen.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/RecMath.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Recognizer.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/RingBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/SoundIO.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/SoundProc.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/ViterbiDecoder.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/nrg.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_playback.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_portaudio.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_recognizer_live.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="1">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_recognizer_offline.c"
+            ex="false"
+            tool="0"
+            flavor2="3">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/Audio.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/BinaryBuffer.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/Common.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/Configuration.c" ex="false" tool="0" flavor2="2">
+      </item>
+      <item path="../../src/FeatureExtraction.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/LikelihoodGen.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/RecMath.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/Recognizer.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/RingBuffer.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/SoundIO.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/SoundProc.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/ViterbiDecoder.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/nrg.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/test_feature_extraction.c"
+            ex="false"
+            tool="0"
+            flavor2="2">
+      </item>
+      <item path="../../src/test_playback.c" ex="false" tool="0" flavor2="2">
+      </item>
+      <item path="../../src/test_portaudio.c" ex="false" tool="0" flavor2="2">
+      </item>
+      <item path="../../src/test_recognizer_live.c" ex="false" tool="0" flavor2="2">
+      </item>
+      <item path="../../src/test_recognizer_offline.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+    </conf>
+    <conf name="Debug" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>/home/giampi/Documents/SynfaceSpeechRecognizer/src</buildCommandWorkingDir>
+          <buildCommand>${MAKE}</buildCommand>
+          <cleanCommand>${MAKE} clean</cleanCommand>
+          <executablePath></executablePath>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand></preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Audio.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Audio.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/BinaryBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/BinaryBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Common.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Common.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/FeatureExtraction.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/FeatureExtraction.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/LikelihoodGen.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/LikelihoodGen.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/LowpassFilter.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/RecMath.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/RecMath.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Recognizer.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/Recognizer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/RingBuffer.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/RingBuffer.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/SoundIO.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/SoundIO.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/SoundProc.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/SoundProc.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/ViterbiDecoder.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/ViterbiDecoder.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/nrg.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/nrg.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_playback.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_portaudio.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_recognizer_live.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../Documents/SynfaceSpeechRecognizer/src/test_recognizer_offline.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../src/Audio.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/Audio.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/BinaryBuffer.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/BinaryBuffer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/Common.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/Common.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/Configuration.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/Configuration.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/FeatureExtraction.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/FeatureExtraction.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/LikelihoodGen.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/LikelihoodGen.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/LowpassFilter.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/RecMath.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/RecMath.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/Recognizer.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/Recognizer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/RingBuffer.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/RingBuffer.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/SoundIO.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/SoundIO.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/SoundProc.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/SoundProc.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/ViterbiDecoder.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/ViterbiDecoder.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/nrg.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/nrg.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../../src/test_feature_extraction.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="../../src/test_playback.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/test_portaudio.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/test_recognizer_live.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="../../src/test_recognizer_offline.c"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
