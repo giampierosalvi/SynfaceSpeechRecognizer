@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "%s\n", sf_strerror(ff));
     exit(1);
   } else {
-    fprintf(stderr, "opened sound file with [n=%d, sf=%d, ch=%d, fmt=%d]\n",
+    fprintf(stderr, "opened sound file with [n=%ld, sf=%d, ch=%d, fmt=%d]\n",
             sf_info.frames, sf_info.samplerate, sf_info.channels, sf_info.format);
   }
 
@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
   of = fopen(outfile,"w");
 
   j=0;
-  while (n=sf_read_short(ff, wavbuf, WAVBUFSIZE)) {
+  while ((n=sf_read_short(ff, wavbuf, WAVBUFSIZE))) {
     // printf("pushing %d samples\n",n);
     Recognizer_PushSpeech(r,wavbuf,n);
     while(Recognizer_GetResult(r, &res_idx, &res_frame_time, &res_playback_time)) {

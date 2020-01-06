@@ -105,7 +105,7 @@ int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net) {
 	    i,g->outputStreamSizes[i]);
   /* output_component_name should hold the phone names */
 
-  /* now assume sinlge input and output stream */
+  /* now assume single input and output stream */
   g->inputsize = g->sim->input_stream_size[0];
   g->outputsize = g->sim->output_stream_size[0];
   /* allocate holders */

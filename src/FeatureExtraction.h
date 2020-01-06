@@ -48,7 +48,7 @@ typedef struct {
   float framelen;
   float preemph;
   float lifter;
-  Speetures *speetures;    /* feature extraction structure a poiter to
+  Speetures *speetures;    /* feature extraction structure a pointer to
 			      this is also given to SoundIO */
 } FeatureExtraction;
 
