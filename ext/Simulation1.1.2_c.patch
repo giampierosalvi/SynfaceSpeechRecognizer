@@ -1,0 +1,44 @@
+--- nico-1.1.2/lib/Simulation.c	2010-09-23 06:57:06.000000000 +0200
++++ SynfaceSpeechRecognizer/ext/nico-1.1.2/lib/Simulation.c	2020-01-08 22:58:52.278348695 +0100
+@@ -584,14 +584,15 @@
+   if (net->has_data) FreeExtData(net);
+ 
+   FREE2D(net->stream_name, net->NumStreams); 
+-  FREE2D(net->stream_dir, net->NumStreams)
+-  FREE2D(net->stream_ext, net->NumStreams)
+-
++  FREE2D(net->stream_dir, net->NumStreams);
++  FREE2D(net->stream_ext, net->NumStreams);
++  FREE2D(net->stream_comp_name, net->NumExt);
++  
+   FREE(net->stream_offset); 
+   FREE(net->stream_mode);  
+   FREE(net->stream_format); 
+   FREE(net->stream_size); 
+-  FREE(net->stream_filter); 
++  FREE2D(net->stream_filter, net->NumStreams); 
+   FREE(net->lin_a); 
+   FREE(net->lin_b); 
+ 
+@@ -602,8 +603,11 @@
+   FREE(net->Xlag);
+   FREE(net->link_mode); 
+ 
+-  FREE2D(net->ConstName, net->NumConstants)
++  FREE(net->Constants);
++  FREE2D(net->ConstName, net->NumConstants);
+ 
++  FREE2D(net->ConLink, net->NumUnits);
++  
+   FREE(net->NumInflows);
+ 
+   FREE2D(net->Inflows, net->NumUnits)
+@@ -613,6 +617,8 @@
+   FREE2D(net->Momentum, net->NumUnits)
+   FREE2D(net->DeltaW, net->NumUnits)
+   FREE2D(net->Plast, net->NumUnits)
++  
++  FREE(net);
+ }
+ 
+ 
