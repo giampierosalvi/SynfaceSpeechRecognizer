@@ -29,7 +29,7 @@ The code is divided into the following parts:
 * `ext`: external dependecies
 * `tcl`: extensions to build a Tcl package
 * `share`: model and configuration files for a number of languages
-* `nbprojects`: Adobe NetBeans project files if you want to use an IDE (not necessary and experimental).
+* `nbprojects`: Apache NetBeans project files if you want to use an IDE (not necessary and experimental).
 
 ### Building the Code
 The code depends on [portaudio](http://www.portaudio.com/) and the [NICO toolkit](http://nico.nikkostrom.com/). The test programs also make use of [libsndfile](http://www.mega-nerd.com/libsndfile/) to read audio files. The following commands will install the dependencies:  
