@@ -38,6 +38,7 @@ sudo apt install portaudio19-dev libsndfile1-dev
 cd ext
 make nico
 ```
+The last command downloads and build the NICO toolkit version 1.1.2. It also applies some patches to the toolkit to be able to build natively on a 64 bit system and to fix some memory leaks.
 
 If you installed all the dependencies, your should be able to run:
 ```
