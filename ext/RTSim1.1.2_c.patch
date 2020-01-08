@@ -1,5 +1,5 @@
---- nico-1.1.2/lib/RTSim.c	2010-09-23 06:57:06.000000000 +0200
-+++ SynfaceSpeechRecognizer/ext/nico-1.1.2/lib/RTSim.c	2020-01-08 22:28:28.351005488 +0100
+--- RTSim-1.1.2.c	2010-09-23 06:57:06.000000000 +0200
++++ RTSim.c	2020-01-08 22:28:28.351005488 +0100
 @@ -329,9 +329,11 @@
    for (i = 0; i < work->num_input_streams; i++) {
      FREE(work->input_component_name[i]);

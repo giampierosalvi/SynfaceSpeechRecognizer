@@ -1,5 +1,5 @@
---- nico-1.1.2/lib/Simulation.c	2010-09-23 06:57:06.000000000 +0200
-+++ SynfaceSpeechRecognizer/ext/nico-1.1.2/lib/Simulation.c	2020-01-08 22:58:52.278348695 +0100
+--- Simulation-1.1.2.c	2010-09-23 06:57:06.000000000 +0200
++++ Simulation.c	2020-01-08 22:58:52.278348695 +0100
 @@ -584,14 +584,15 @@
    if (net->has_data) FreeExtData(net);
  
