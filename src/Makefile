@@ -17,7 +17,7 @@ modules = Audio.o BinaryBuffer.o Common.o FeatureExtraction.o LikelihoodGen.o \
 tests = test_playback test_portaudio test_recognizer_live test_recognizer_offline
 
 debug: CFLAGS += -DDEBUG -g
-debug: test_recognizer_offline
+debug: test_recognizer_offline test_recognizer_live
 
 all: librec.a $(tests)
 

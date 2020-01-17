@@ -26,140 +26,12 @@
 
 //#include <mcheck.h>
 
-/* Note that configuration of the recognizer is more complicated than
-   it should. This is due to the problems related with Tcl integration
-   and working with wrapped Tcl code. */
-
-// 16 MB
-#define MAX_FILE_SIZE 16777216
 #ifndef error
 #  define error() return -1
 #endif
 
 extern int countInitialSamples;
 extern int outputInitialSamples;
-
-
-/* there is a simpler function in LikelihoodGen.h, but this is the way it's done from Tcl
-int ReadANN(Recognizer *r, char *filename) {
-  FILE *f;
-  unsigned char *buffer;
-  int n;
-  BinaryBuffer *binbuf;
-
-  f = fopen(filename, "rb");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s", filename);
-    error();
-  }
-  buffer = (unsigned char *) malloc(MAX_FILE_SIZE*sizeof(unsigned char));
-  n = fread(buffer, 1, MAX_FILE_SIZE, f);
-  fclose(f);
-  binbuf = BinaryBuffer_Create((char *) buffer, n);
-  free(buffer);
-  LikelihoodGen_LoadANNFromBuffer(r->lg, binbuf);
-  BinaryBuffer_Free(binbuf);
-  Recognizer_GetOutSym(r);
-
-  return 0;
-}
-*/
-
-int ReadANN(Recognizer *r, char *filename) {
-  FILE *f;
-
-  f = fopen(filename, "rb");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s", filename);
-    error();
-  }
-  LikelihoodGen_LoadANNFromFile(r->lg, f);
-  fclose(f);
-  Recognizer_GetOutSym(r);
-
-  return 0;
-}
-
-int ReadPhPrior(Recognizer *r, char *filename) {
-  FILE *f;
-  float tmp[200]; // priors are usually around of length 50
-  int n = 0;
-  Vector *pp;
-
-  f = fopen(filename, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s", filename);
-    error();
-  }
-  while(fscanf(f, "%f\n", &tmp[n]) != EOF) n++;
-  fclose(f);
-
-  pp = Vector_CrearteWithData(tmp,n);
-  LikelihoodGen_SetPhPrior(r->lg,pp);
-  return 0;
-}
-
-int ReadGrammar(Recognizer *r, char *filebasename, float gramfact, float insweight) {
-  FILE *f;
-  char filename[512];
-  int n = 0;
-  int from[4000], to[4000], type[4000];
-  float weight[4000];
-  SparseMatrix *transmat;
-  Vector *stPrior;
-  IntVector *fisStateId;
-
-  /* transition matrix */
-  sprintf(filename, "%s.transmat", filebasename);
-  f = fopen(filename, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", filename);
-    error();
-  }
-  while(fscanf(f, "%d %d %f %d\n", &from[n], &to[n], &weight[n], &type[n]) != EOF) {
-    from[n]--; to[n]--; // convert from matlab to C indexes
-    // here check Inf values (but there are none in the files I have checked)
-    weight[n] *= -1;
-    if(type[n]) // apply grammar factor and insertion weight
-      weight[n] = weight[n] * gramfact + insweight;
-    n++;
-  }
-  fclose(f);
-  transmat = SparseMatrix_CreateWithData(from, to, weight, type, n);
-
-  /* state prior */
-  sprintf(filename, "%s.prior", filebasename);
-  n=0;
-  f = fopen(filename, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", filename);
-    error();
-  }
-  while(fscanf(f, "%f\n", &weight[n]) != EOF) {
-    from[n] *= -1; // this should work with the inf valuse as well
-    n++;
-  }
-  fclose(f);
-  stPrior = Vector_CrearteWithData(weight,n);
-
-  /* fis state id */
-  sprintf(filename, "%s.map", filebasename);
-  n=0;
-  f = fopen(filename, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", filename);
-    error();
-  }
-  while(fscanf(f, "%d\n", &from[n]) != EOF) {
-    from[n]--; // convert from matlab to C indexes
-    n++;
-  }
-  fclose(f);
-  fisStateId = IntVector_CreateWithData(from,n);
-
-  ViterbiDecoder_SetGrammar(r->vd,transmat,stPrior,fisStateId);
-  return 0;
-}
 
 void printFloatArray(float *a, int len) {
   int i;
@@ -203,28 +75,13 @@ int main(int argc, char **argv) {
   printf("creating recognizer object in live mode...\n"); fflush(stdout);
   r = Recognizer_Create(1);
 
-  printf("configuring feature extraction...\n"); fflush(stdout);
-  r->fe->inputrate = 8000;
-  r->fe->numfilters = 24;
-  r->fe->numceps = 12;
-  r->fe->lowfreq = 0.0;
-  r->fe->hifreq = 4000.0;
-  r->fe->framestep = 0.01;
-  r->fe->framelen = 0.025;
-  r->fe->preemph = 0.97;
-  r->fe->lifter = 22.0;
+  printf("loading recognition models...\n"); fflush(stdout);
+  if(Recognizer_LoadModel(r, "../share/swedish") != 0) {
+    fprintf(stderr, "Failed to load model files, aborting.\n");
+    exit(1);
+  }
 
-  printf("configuring neural network...\n"); fflush(stdout);
-  ReadANN(r, "../share/swedish/rnn.rtd");
-  ReadPhPrior(r, "../share/swedish/phone_prior.txt");
-    
-  printf("configuring Viterbi decoder...\n"); fflush(stdout);
-  r->vd = ViterbiDecoder_Create();
-  //ReadGrammar(r, "../share/netsimple_sv", 1, 0);
-  ViterbiDecoder_CreateAndSetGrammar(r->vd, r->lg->outputsize, 3);
-  ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
-  Recognizer_SetLookahead(r, 3);
-  //}
+  printf("setting callback to display results...\n"); fflush(stdout);
   Recognizer_SetCallback(r, (RecognizerCallbackProc *) &display_results);
     
   /* test three times to check memory management */
