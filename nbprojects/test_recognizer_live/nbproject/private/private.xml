@@ -10,22 +10,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/SoundProc.h</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/RecMath.c</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/nrg.h</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/nrg.c</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/SoundIO.h</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/FeatureExtraction.h</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/FeatureExtraction.c</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/test_portaudio.c</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/Recognizer.h</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/LikelihoodGen.c</file>
             <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/Recognizer.c</file>
             <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/test_recognizer_offline.c</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/SoundProc.c</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/RecMath.h</file>
             <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/test_recognizer_live.c</file>
-            <file>file:/home/giampi/Documents/SynfaceSpeechRecognizer/src/ViterbiDecoder.c</file>
         </group>
     </open-files>
 </project-private>
