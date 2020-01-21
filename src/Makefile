@@ -3,7 +3,7 @@ NICOLIB = ../ext/nico-1.1.2/lib
 CC	= gcc
 # CC	= clang
 OPT	= -O -ffast-math
-ASANFLAGS = -fsanitize=address -O1 -fno-omit-frame-pointer
+ASANFLAGS = -fsanitize=address -O0 -fno-omit-frame-pointer
 CFLAGSDEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
 CFLAGSNODEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
 CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector $(ASANFLAGS)
