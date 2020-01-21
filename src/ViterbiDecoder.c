@@ -287,8 +287,7 @@ int ViterbiDecoder_SetLookahead(ViterbiDecoder *vd, int lookahead) {
 int ViterbiDecoder_Activate(ViterbiDecoder *vd) {
   int i,j;
 
-  if(vd->grammar == NULL)
-    SparseMatrix_Free(&vd->grammar);
+  SparseMatrix_Free(&vd->grammar);
 
   vd->grammar = SparseMatrix_Duplicate(vd->transmat);
   for(i=0; i<vd->grammar->ncols; i++) {
@@ -328,7 +327,7 @@ int ViterbiDecoder_Reset(ViterbiDecoder *vd) {
   //memset(vd->preDelta, 0, vd->nStates*sizeof(float));
   //memset(vd->delta, 0, vd->nStates*sizeof(float));
 
-  return 1;
+  return 0;
 }
 
 int BestDeltaIdx(LogFloat *delta, int nStates) {
@@ -345,36 +344,6 @@ int BestDeltaIdx(LogFloat *delta, int nStates) {
 
   return maxidx;
 }
-
-#if 0
-/* backtrack backTrackLen times */
-/* makes use of circular arrays psi and tempPath */
-int BackTrack(ViterbiDecoder *vd) {
-  int relT = vd->relT;
-  int t, prevIdx;
-  int relBt,relBtp1; /* please change names !! */
-  int backTrackLen = vd->backTrackLen;
-  int maxDelay = vd->maxDelay;
-/*int checkLen = 0;*/
-
-  vd->tempPath[relT] = BestDeltaIdx(vd->delta, vd->nStates);
-  for(t=relT-1;t>relT-maxDelay;t--) {
-/*checkLen++;*/
-    relBt = Mod(t,backTrackLen); relBtp1 = Mod(t+1,backTrackLen);
-    prevIdx = vd->psi[vd->tempPath[relBtp1]][relBtp1];
-    if(prevIdx<0) Error("negative index","");
-    if(vd->tempPath[relBt] == prevIdx) break; /* the rest of the path is the same */
-    vd->tempPath[relBt] = prevIdx;
-  }
-/*  DBGPRINTF("actual length: %d\n",checkLen); */
-/* for checking !!!
-for(t=relT;t>relT-maxDelay;t--)
-  DBGPRINTF("%d ",r->tempPath[Mod(t,backTrackLen)]);
-DBGPRINTF("\n");
- end for checking !!!*/
-  return vd->tempPath[Mod(relT-maxDelay,backTrackLen)];
-}
-#endif
 
 /* backtrack backTrackLen times */
 /* makes use of circular arrays psi and tempPath */
