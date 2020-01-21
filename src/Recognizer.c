@@ -125,7 +125,7 @@ Recognizer *Recognizer_Create(int liveAudio) {
 }
 
 /* this assumes that r has been created, make more safe! */
-/* Should be substituted by Configuration_ApplyConfig */
+/* Should be substituted by Configuration_ApplyConfigFromFile */
 int Recognizer_LoadModel(Recognizer *r, char* dir) {
   char filename[2048];
   int dirlen = strlen(dir);
@@ -674,7 +674,7 @@ int Recognizer_Start(Recognizer *r) {
   DBGPRINTF("activating LikelihoodGen\n");
   LikelihoodGen_Activate(r->lg);
 
-  if(r-vd != NULL)
+  if(r->vd != NULL)
     ViterbiDecoder_Activate(r->vd);
   
   if (r->s != NULL) {
