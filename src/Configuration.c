@@ -59,16 +59,13 @@ int ReadANNAsInTCL(Recognizer *r, char *filename) {
 }*/
 
 /* expecting three filenames separated by commas without spaces */
-int ReadGrammar(Recognizer *r, char *filenames, float gramfact, float insweight) {
-  FILE *f;
+int ReadGrammar(Recognizer *r, char *filenames) {
   int fn_idx;
   char transmat_fn[MAX_PATH_LEN], prior_fn[MAX_PATH_LEN], map_fn[MAX_PATH_LEN], *fn_p[3], *src_p;
-  int n = 0;
-  int from[4000], to[4000], type[4000];
-  float weight[4000];
-  SparseMatrix *transmat;
-  Vector *stPrior;
-  IntVector *fisStateId;
+  int m, n;
+  SparseMatrix *hmmTransmat;
+  Vector *hmmStPrior;
+  IntVector *hmmFisStateId;
 
   /* first copy path name */
   fn_p[0] = transmat_fn;
@@ -79,9 +76,9 @@ int ReadGrammar(Recognizer *r, char *filenames, float gramfact, float insweight)
     *fn_p[1]++ = r->configDirName[n];
     *fn_p[2]++ = r->configDirName[n];
   }
-  *fn_p[0]++ = '\0';
-  *fn_p[1]++ = '\0';
-  *fn_p[2]++ = '\0';
+  *fn_p[0]++ = '/';
+  *fn_p[1]++ = '/';
+  *fn_p[2]++ = '/';
 
   /* now parse input parameter */
   src_p = filenames;
@@ -101,53 +98,28 @@ int ReadGrammar(Recognizer *r, char *filenames, float gramfact, float insweight)
   if(fn_idx!=2) return -1; /* too few commas */
  
   /* transition matrix */
-  f = fopen(transmat_fn, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", transmat_fn);
-    return -1;
+  hmmTransmat = SparseMatrix_LoadFromFilename(transmat_fn, 1);
+  /* invert values */
+  for (n = 0; n < hmmTransmat->ncols; n++) {
+    for (m = 0; m < hmmTransmat->nels[n]; m++) {
+      hmmTransmat->data[n][m] *= -1;
+    }
   }
-  while(fscanf(f, "%d %d %f %d\n", &from[n], &to[n], &weight[n], &type[n]) != EOF) {
-    from[n]--; to[n]--; // convert from matlab to C indexes
-    // here check Inf values (but there are none in the files I have checked)
-    weight[n] *= -1;
-    /* This is now done by ViterbiDecoder_Activate
-    if(type[n]) // apply grammar factor and insertion weight
-      weight[n] = weight[n] * gramfact + insweight;
-    */
-    n++;
-  }
-  fclose(f);
-  transmat = SparseMatrix_CreateWithData(from, to, weight, type, n);
 
   /* state prior */
-  n=0;
-  f = fopen(prior_fn, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", prior_fn);
-    return -1;
-  }
-  while(fscanf(f, "%f\n", &weight[n]) != EOF) {
-    from[n] *= -1; // this should work with the inf valuse as well
-    n++;
-  }
-  fclose(f);
-  stPrior = Vector_CrearteWithData(weight,n);
+  hmmStPrior = Vector_LoadFromFilename(prior_fn);
+  /* invert values */
+  for (n = 0; n < hmmStPrior->nels; n++)
+    hmmStPrior->data[n] *= -1;
 
   /* fis state id */
-  n=0;
-  f = fopen(map_fn, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", map_fn);
-    return -1;
-  }
-  while(fscanf(f, "%d\n", &from[n]) != EOF) {
-    from[n]--; // convert from matlab to C indexes
-    n++;
-  }
-  fclose(f);
-  fisStateId = IntVector_CreateWithData(from,n);
+  hmmFisStateId = IntVector_LoadFromFilename(map_fn);
+  /* convert from matlab to C format */
+  for (n = 0; n < hmmFisStateId->nels; n++)
+    hmmFisStateId->data[n] -= 1;
 
-  ViterbiDecoder_SetGrammar(r->vd,transmat,stPrior,fisStateId);
+  ViterbiDecoder_SetGrammar(r->vd,hmmTransmat,hmmStPrior,hmmFisStateId);
+  
   return 0;
 }
 
@@ -175,16 +147,26 @@ int Configuration_ApplyOption(Recognizer *r, char *option, char *value) {
   switch(hash(option)) {
     /* General parameters */
       case CONF_LG_ANN: /* -lg:ann */
-    if(joinPath(filename, r->configDirName, value) != 0)
+    if(joinPath(filename, r->configDirName, value) < 0) {
+      fprintf(stderr, "failed to join paths\n");
       return -1;
-    LikelihoodGen_LoadANNFromFilename(r->lg, filename);
+    }
+    if(LikelihoodGen_LoadANNFromFilename(r->lg, filename) != 0) {
+        return -1;
+    }
     Recognizer_GetOutSym(r);
     break;
       case CONF_LG_PHPRIOR: /* -lg:phprior */
-    if(joinPath(filename, r->configDirName, value) != 0)
+    if(joinPath(filename, r->configDirName, value) < 0) {
+      fprintf(stderr, "failed to join paths\n");
       return -1;
+    }
     Vector *pp = Vector_LoadFromFilename(filename);
-    LikelihoodGen_SetPhPrior(r->lg,pp);
+    if(pp==NULL) {
+      return -1;
+    } else {
+      LikelihoodGen_SetPhPrior(r->lg,pp);
+    }
     break;
       case CONF_DECODER: /* -decoder */
     // fill this
@@ -219,7 +201,9 @@ int Configuration_ApplyOption(Recognizer *r, char *option, char *value) {
     break;
     /* Viterbi decoder parameters */
       case CONF_VT_HMM: /* -vt:hmm */
-    ReadGrammar(r, value, 1, 0);
+    if(ReadGrammar(r, value)!=0) {
+        return -1;
+    }
     break;
       case CONF_VT_LOOKAHEAD: /* -vt:lookahead */
     Recognizer_SetLookahead(r, atoi(value));
@@ -253,7 +237,10 @@ int Configuration_ApplyConfigFromFilename(Recognizer *r, char *filename) {
   }
   
   while(fscanf(fp, "%s %s\n", option, value) == 2) {
-      Configuration_ApplyOption(r, option, value);
+      if(Configuration_ApplyOption(r, option, value) != 0) {
+          fclose(fp);
+          return -1;
+      }
   }
 
   fclose(fp);
