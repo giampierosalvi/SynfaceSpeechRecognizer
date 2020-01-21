@@ -38,7 +38,8 @@
 
 int MaxIdx(float *vec, int size);
 
-LikelihoodGen *LikelihoodGen_Create(int smpRate) {
+LikelihoodGen *LikelihoodGen_Create(int smpRate)
+{
   LikelihoodGen *g;
   g = (LikelihoodGen *) malloc(sizeof(LikelihoodGen));
 
@@ -57,10 +58,12 @@ LikelihoodGen *LikelihoodGen_Create(int smpRate) {
 }
 
 
-int LikelihoodGen_Free(LikelihoodGen **gptr) {
+int LikelihoodGen_Free(LikelihoodGen **gptr)
+{
   LikelihoodGen *g = *gptr;
 
-  if(g->sim!=NULL) {
+  if(g->sim!=NULL)
+  {
     DBGPRINTF("freing RTSim...\n");
     FreeNetWork(g->sim->net); /* this is not done in FreeRTSim!!! */
     FreeRTSim(g->sim);
@@ -78,12 +81,15 @@ int LikelihoodGen_Free(LikelihoodGen **gptr) {
 }
 
 /* TODO: this shouldn't access g->numOutputStreams, g->outputStreamSizes */
-int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net) {
+int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net)
+{
   int i;
 
-  if(g->sim!=NULL) {
+  if(g->sim!=NULL)
+  {
     DBGPRINTF("g->sim is not NULL, freing\n");
-    if(g->sim->net!=NULL) {
+    if(g->sim->net!=NULL)
+    {
       DBGPRINTF("g->sim->net is not NULL, freing\n");
       FreeNetWork(g->sim->net); /* this is not done in FreeRTSim!!! */
     }
@@ -92,17 +98,24 @@ int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net) {
 
   DBGPRINTF("before CompileRTSim\n");
   g->sim = CompileRTSim(net);     /* in RTSim.c */
+  if(g->sim == NULL)
+  {
+    return -1;
+  }
   DBGPRINTF("number of inputs streams: %d\n",
 	  g->sim->num_input_streams);
   for(i=0;i<g->sim->num_input_streams;i++)
+  {
     DBGPRINTF("   input stream %d: size: %d\n",
 	    i,g->sim->input_stream_size[i]);
+  }
   RTSimOutputSize(g->sim, &(g->numOutputStreams), &(g->outputStreamSizes));
-  DBGPRINTF("number of outputs streams: %d\n",
-	  g->numOutputStreams);
+  DBGPRINTF("number of outputs streams: %d\n", g->numOutputStreams);
   for(i=0;i<g->numOutputStreams;i++)
+  {
     DBGPRINTF("  output stream %d: size: %d\n",
 	    i,g->outputStreamSizes[i]);
+  }
   /* output_component_name should hold the phone names */
 
   /* now assume single input and output stream */
@@ -110,22 +123,33 @@ int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net) {
   g->outputsize = g->sim->output_stream_size[0];
   /* allocate holders */
   if(g->lh==NULL)
+  {
     g->lh = malloc(g->outputsize*sizeof(float));
+  }
   else
+  {
     g->lh = realloc(g->lh, g->outputsize*sizeof(float));
+  }
   if(g->pp==NULL)
+  {
     g->pp = malloc(g->outputsize*sizeof(float));
+  }
   else
+  {
     g->pp = realloc(g->pp, g->outputsize*sizeof(float));
+  }
 
   return 0;
 }
 
-int LikelihoodGen_LoadANNFromFile(LikelihoodGen *g, FILE *filep) {
-  Net *net;
+int LikelihoodGen_LoadANNFromFile(LikelihoodGen *g, FILE *filep)
+{
+  Net *net = NULL;
   
   DBGPRINTF("before ReadNet\n");
   net = ReadNet(filep);
+  if(net==NULL) return -1;
+
   LikelihoodGen_LoadANN(g, net);
 
   DBGPRINTF("before FreeNet\n");
@@ -133,11 +157,13 @@ int LikelihoodGen_LoadANNFromFile(LikelihoodGen *g, FILE *filep) {
   return 0;
 }
 
-int LikelihoodGen_LoadANNFromFilename(LikelihoodGen *g, char *filename) {
+int LikelihoodGen_LoadANNFromFilename(LikelihoodGen *g, char *filename)
+{
   FILE *f = NULL;
 
   f = fopen(filename, "rb");
-  if (!f) {
+  if (!f)
+  {
     fprintf(stderr, "cannot open file %s", filename);
     return -1;
   }
@@ -147,7 +173,8 @@ int LikelihoodGen_LoadANNFromFilename(LikelihoodGen *g, char *filename) {
   return 0;
 }
 
-int LikelihoodGen_LoadANNFromBuffer(LikelihoodGen *g, BinaryBuffer *buf) {
+int LikelihoodGen_LoadANNFromBuffer(LikelihoodGen *g, BinaryBuffer *buf)
+{
   Net *net;
 
   DBGPRINTF("before ReadNet\n");
@@ -161,11 +188,13 @@ int LikelihoodGen_LoadANNFromBuffer(LikelihoodGen *g, BinaryBuffer *buf) {
   return 0;
 }
 
-float pLogP(float p) {
+float pLogP(float p)
+{
   return (p>0.000000000001) ? (p*log(p)) : 0.0;
 }
 
-int LikelihoodGen_ConsumeFrame(LikelihoodGen *g) {
+int LikelihoodGen_ConsumeFrame(LikelihoodGen *g)
+{
   //int res; /* store the results */
   float **out;
   int i;
@@ -179,7 +208,8 @@ int LikelihoodGen_ConsumeFrame(LikelihoodGen *g) {
   //return g->sim->output_component_name[0][g->prevRes];
 
   RTSimInput(g->sim); /* costly */
-  if(RTSimOutput(g->sim)==0) { /* costless */
+  if(RTSimOutput(g->sim)==0)
+  { /* costless */
     out = GetRTSimOutputVectors(g->sim);
 
   //sumDebug = 0.0;
@@ -188,7 +218,8 @@ int LikelihoodGen_ConsumeFrame(LikelihoodGen *g) {
 
   /* this is the output vector for the first and only stream */
     memcpy(g->pp, out[0], g->outputsize*sizeof(float));
-    for (i = 0; i < g->outputsize; i++) {
+    for (i = 0; i < g->outputsize; i++)
+    {
       g->lh[i] = g->pp[i]/g->phPrior->data[i];
     }
     return 1;
@@ -197,7 +228,8 @@ int LikelihoodGen_ConsumeFrame(LikelihoodGen *g) {
 }
 
 /* these are used for starting and stopping, perhaps not complete */
-int LikelihoodGen_Activate(LikelihoodGen *g) {
+int LikelihoodGen_Activate(LikelihoodGen *g)
+{
   if(!g) return -1;
   if(!g->sim) return -1;
 
@@ -210,22 +242,25 @@ int LikelihoodGen_Activate(LikelihoodGen *g) {
   return 0;
 }
 
-int MaxIdx(float *vec, int size) {
+int MaxIdx(float *vec, int size)
+{
   int i;
   float max=vec[0];
   int maxi=0;
 
   for(i=1;i<size;i++)
-    if(vec[i]>max) {
+  {
+    if(vec[i]>max)
+    {
       max = vec[i];
       maxi = i;
     }
-
+  }
   return maxi;
 }
 
-int LikelihoodGen_SetPhPrior(LikelihoodGen *g, Vector *phPrior) {
-
+int LikelihoodGen_SetPhPrior(LikelihoodGen *g, Vector *phPrior)
+{
   if(g==NULL) return -1;
   if(phPrior==NULL) return -1;
   if(g->phPrior != NULL) Vector_Free(&g->phPrior);
@@ -236,17 +271,20 @@ int LikelihoodGen_SetPhPrior(LikelihoodGen *g, Vector *phPrior) {
 
 /* This checks if ann and phPrior have been properly loaded */
 /* this has been substituted by the check in rec::start */
-int LikelihoodGen_CheckData(LikelihoodGen *g) {
-
-  if(g->sim==NULL) {
+int LikelihoodGen_CheckData(LikelihoodGen *g)
+{
+  if(g->sim==NULL)
+  {
     DBGPRINTF("ann missing\n");
     return 1;
   }
-  if(g->phPrior==NULL) {
+  if(g->phPrior==NULL)
+  {
     DBGPRINTF("phPrior missing\n");
     return 1;
   }
-  if(g->phPrior->nels!=g->outputsize) {
+  if(g->phPrior->nels!=g->outputsize)
+  {
     DBGPRINTF("phPrior wrong length\n");
     return 1;
   }
@@ -255,20 +293,23 @@ int LikelihoodGen_CheckData(LikelihoodGen *g) {
 }
 
 /* returns size of the (only) output stream */
-int LikelihoodGen_GetOutSize(LikelihoodGen *g) {
+int LikelihoodGen_GetOutSize(LikelihoodGen *g)
+{
   int res = 0;
   if(g!=NULL) res = g->outputsize;
   return res;
 }
 
 /* returns size of the (only) input stream */
-int LikelihoodGen_GetInSize(LikelihoodGen *g) {
+int LikelihoodGen_GetInSize(LikelihoodGen *g)
+{
   int res = 0;
   if(g!=NULL) res = g->inputsize;
   return res;
 }
 
-void LikelihoodGen_SetDebug(LikelihoodGen *g, int level) {
+void LikelihoodGen_SetDebug(LikelihoodGen *g, int level)
+{
   if(g != NULL) g->debug = level;
 }
 
