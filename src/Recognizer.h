@@ -23,6 +23,7 @@
 #ifndef _RECOGNIZER_H_
 #define _RECOGNIZER_H_
 
+#include "Common.h"
 #include "SoundIO.h"
 #include "SoundProc.h"
 #include "FeatureExtraction.h"
@@ -74,6 +75,7 @@ typedef struct {
 
 typedef struct {
   int debug;
+  char configDirName[MAX_PATH_LEN];
   long int currFrame;
   short stopped;
   char **ph; /* holds the names of the phones + \n */
