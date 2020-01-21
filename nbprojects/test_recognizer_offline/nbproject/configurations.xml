@@ -4,6 +4,18 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="lib"
+                     displayName="lib"
+                     projectFiles="true"
+                     root="../../ext/nico-1.1.2/lib">
+        <itemPath>../../ext/nico-1.1.2/lib/LogBook.h</itemPath>
+        <itemPath>../../ext/nico-1.1.2/lib/ParamData.h</itemPath>
+        <itemPath>../../ext/nico-1.1.2/lib/RTDNN.h</itemPath>
+        <itemPath>../../ext/nico-1.1.2/lib/RTSim.h</itemPath>
+        <itemPath>../../ext/nico-1.1.2/lib/Simulation.h</itemPath>
+        <itemPath>../../ext/nico-1.1.2/lib/Speetures.h</itemPath>
+        <itemPath>../../ext/nico-1.1.2/lib/System.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="src"
                      displayName="src"
                      projectFiles="true"
@@ -99,8 +111,11 @@
       </toolsSet>
       <flagsDictionary>
         <element flagsID="0" commonFlags="-g -O -ffast-math -fsanitize=address -O1 -g"/>
-        <element flagsID="1"
+        <element flagsID="1" commonFlags="-g -O -ffast-math -fsanitize=address -g"/>
+        <element flagsID="2"
                  commonFlags="-mtune=generic -march=x86-64 -g -O -O1 -ffast-math -fsanitize=address"/>
+        <element flagsID="3"
+                 commonFlags="-mtune=generic -march=x86-64 -g -g -O -ffast-math -fsanitize=address"/>
       </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
@@ -276,7 +291,7 @@
             ex="false"
             tool="0"
             flavor2="3">
-        <cTool flags="1">
+        <cTool flags="2">
           <incDir>
             <pElem>../../Documents/SynfaceSpeechRecognizer/src</pElem>
           </incDir>
@@ -286,7 +301,7 @@
             ex="false"
             tool="0"
             flavor2="3">
-        <cTool flags="1">
+        <cTool flags="2">
           <incDir>
             <pElem>../../Documents/SynfaceSpeechRecognizer/src</pElem>
           </incDir>
@@ -296,7 +311,7 @@
             ex="false"
             tool="0"
             flavor2="3">
-        <cTool flags="1">
+        <cTool flags="2">
           <incDir>
             <pElem>../../Documents/SynfaceSpeechRecognizer/ext/nico-1.1.2/lib</pElem>
             <pElem>../../Documents/SynfaceSpeechRecognizer/src</pElem>
@@ -316,8 +331,51 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/Audio.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+      <item path="../../src/Audio.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/BinaryBuffer.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/Common.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+        </cTool>
+      </item>
+      <item path="../../src/Configuration.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/FeatureExtraction.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/LikelihoodGen.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/RecMath.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
           </incDir>
@@ -326,8 +384,37 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/BinaryBuffer.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+      <item path="../../src/Recognizer.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/RingBuffer.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/SoundIO.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/SoundProc.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
+          <incDir>
+            <pElem>../../src</pElem>
+          </incDir>
+        </cTool>
+      </item>
+      <item path="../../src/ViterbiDecoder.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
           </incDir>
@@ -336,114 +423,11 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/Common.c" ex="false" tool="0" flavor2="0">
-        <cTool flags="0">
+      <item path="../../src/nrg.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="3">
           <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
+            <pElem>../../src</pElem>
           </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/Configuration.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/FeatureExtraction.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/LikelihoodGen.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/RecMath.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/Recognizer.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/RingBuffer.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/SoundIO.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/SoundProc.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/ViterbiDecoder.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
-        </cTool>
-      </item>
-      <item path="../../src/nrg.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
-          <incDir>
-            <pElem>../../ext/nico-1.1.2/lib</pElem>
-          </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
         </cTool>
       </item>
       <item path="../../src/test_feature_extraction.c"
@@ -455,8 +439,8 @@
       </item>
       <item path="../../src/test_portaudio.c" ex="false" tool="0" flavor2="2">
       </item>
-      <item path="../../src/test_recognizer_live.c" ex="false" tool="0" flavor2="2">
-        <cTool flags="0">
+      <item path="../../src/test_recognizer_live.c" ex="false" tool="0" flavor2="3">
+        <cTool flags="1">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
           </incDir>
@@ -468,14 +452,12 @@
       <item path="../../src/test_recognizer_offline.c"
             ex="false"
             tool="0"
-            flavor2="0">
-        <cTool flags="0">
+            flavor2="3">
+        <cTool flags="3">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
+            <pElem>../../src</pElem>
           </incDir>
-          <preprocessorList>
-            <Elem>DEBUG</Elem>
-          </preprocessorList>
         </cTool>
       </item>
     </conf>

@@ -78,10 +78,11 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" ../share/english /home/giampi/corpora/tidigits/disc_4.1.1/tidigits/train/man/fk/63662a.wav train_man_fk_63662a.lab</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" ../share/swedish /home/giampi/corpora/tidigits/disc_4.1.1/tidigits/train/man/fk/63662a.wav train_man_fk_63662a.lab</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" ../share/swedish /home/giampi/corpora/timit/train/dr1/mdpk0/si552.wav timit_train_dr1_mdpk0_si552.lab</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" ../share/swedish/parameters.conf /home/giampi/corpora/timit/train/dr1/mdpk0/si552.wav timit_train_dr1_mdpk0_si552.lab</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" ../share/swedish /home/giampi/corpora/timit/train/dr1/mdpk0/si552.wav timit_train_dr1_mdpk0_si552.lab</runcommand>
+        <runcommand>"${OUTPUT_PATH}" ../share/swedish/parameters.conf /home/giampi/corpora/timit/train/dr1/mdpk0/si552.wav timit_train_dr1_mdpk0_si552.lab</runcommand>
         <arguments>"../share" "en" "/home/giampi/corpora/tidigits/disc_4.1.1/tidigits/train/man/fk/63662a.wav" "train_man_fk_63662a.lab"</arguments>
-        <rundir>../../Documents/SynfaceSpeechRecognizer/src</rundir>
+        <rundir>/home/giampi/Documents/SynfaceSpeechRecognizer/src</rundir>
         <buildfirst>false</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
