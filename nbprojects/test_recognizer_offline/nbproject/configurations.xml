@@ -347,8 +347,6 @@
         </cTool>
       </item>
       <item path="../../src/Configuration.c" ex="false" tool="0" flavor2="2">
-      </item>
-      <item path="../../src/FeatureExtraction.c" ex="false" tool="0" flavor2="0">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -358,7 +356,7 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/LikelihoodGen.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/FeatureExtraction.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -368,7 +366,7 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/RecMath.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/LikelihoodGen.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -378,7 +376,7 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/Recognizer.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/RecMath.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -388,7 +386,7 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/RingBuffer.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/Recognizer.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -398,7 +396,7 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/SoundIO.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/RingBuffer.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -408,7 +406,7 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/SoundProc.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/SoundIO.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -418,7 +416,7 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/ViterbiDecoder.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/SoundProc.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -428,7 +426,17 @@
           </preprocessorList>
         </cTool>
       </item>
-      <item path="../../src/nrg.c" ex="false" tool="0" flavor2="0">
+      <item path="../../src/ViterbiDecoder.c" ex="false" tool="0" flavor2="2">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
+      </item>
+      <item path="../../src/nrg.c" ex="false" tool="0" flavor2="2">
         <cTool flags="0">
           <incDir>
             <pElem>../../ext/nico-1.1.2/lib</pElem>
@@ -448,6 +456,14 @@
       <item path="../../src/test_portaudio.c" ex="false" tool="0" flavor2="2">
       </item>
       <item path="../../src/test_recognizer_live.c" ex="false" tool="0" flavor2="2">
+        <cTool flags="0">
+          <incDir>
+            <pElem>../../ext/nico-1.1.2/lib</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>DEBUG</Elem>
+          </preprocessorList>
+        </cTool>
       </item>
       <item path="../../src/test_recognizer_offline.c"
             ex="false"

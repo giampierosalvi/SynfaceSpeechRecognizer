@@ -27,6 +27,7 @@
       <in>SoundProc.h</in>
       <in>ViterbiDecoder.c</in>
       <in>ViterbiDecoder.h</in>
+      <in>generate_config_hash.c</in>
       <in>nrg.c</in>
       <in>nrg.h</in>
       <in>test_feature_extraction.c</in>
