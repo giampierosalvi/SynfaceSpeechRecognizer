@@ -43,66 +43,7 @@ extern int countInitialSamples;
 extern int outputInitialSamples;
 
 
-/* there is a simpler function in LikelihoodGen.h, but this is the way it's done from Tcl
-int ReadANN(Recognizer *r, char *filename) {
-  FILE *f;
-  unsigned char *buffer;
-  int n;
-  BinaryBuffer *binbuf;
-
-  f = fopen(filename, "rb");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s", filename);
-    error();
-  }
-  buffer = (unsigned char *) malloc(MAX_FILE_SIZE*sizeof(unsigned char));
-  n = fread(buffer, 1, MAX_FILE_SIZE, f);
-  fclose(f);
-  binbuf = BinaryBuffer_Create((unsigned char *) buffer, n);
-  free(buffer);
-  LikelihoodGen_LoadANNFromBuffer(r->lg, binbuf);
-  BinaryBuffer_Free(binbuf);
-  Recognizer_GetOutSym(r);
-
-  return 0;
-}
-*/
-
-int ReadANN(Recognizer *r, char *filename) {
-  FILE *f;
-
-  f = fopen(filename, "rb");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", filename);
-    error();
-  }
-  LikelihoodGen_LoadANNFromFile(r->lg, f);
-  fclose(f);
-  Recognizer_GetOutSym(r);
-
-  return 0;
-}
-
-int ReadPhPrior(Recognizer *r, char *filename) {
-  FILE *f;
-  float tmp[200]; // priors are usually around of length 50
-  int n = 0;
-  Vector *pp;
-
-  f = fopen(filename, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", filename);
-    error();
-  }
-  while(fscanf(f, "%f\n", &tmp[n]) != EOF) n++;
-  fclose(f);
-
-  pp = Vector_CrearteWithData(tmp,n);
-  LikelihoodGen_SetPhPrior(r->lg,pp);
-  return 0;
-}
-
-int ReadGrammar(Recognizer *r, char *modelDir, float gramfact, float insweight) {
+int ReadGrammarToBeDeleted(Recognizer *r, char *modelDir, float gramfact, float insweight) {
   FILE *f;
   char filename[512];
   int n = 0;
@@ -191,18 +132,18 @@ int main(int argc, char **argv) {
   SF_INFO sf_info;
   FILE *of = NULL;
   short wavbuf[WAVBUFSIZE];
-  char *infile, *outfile, *modelDir;
+  char *infile, *outfile, *confFilename;
   int n;
   int offset=120;
 
   //  mtrace();
   srand(0);
   if (argc == 4) {
-    modelDir = argv[1];
+    confFilename = argv[1];
     infile = argv[2];
     outfile = argv[3];
   } else {
-    fprintf(stderr,"usage: %s <model dir> <input audio file> <output lab file>\n",argv[0]);
+    fprintf(stderr,"usage: %s <conf file> <input audio file> <output lab file>\n",argv[0]);
     exit(1);
   }
 
@@ -218,7 +159,8 @@ int main(int argc, char **argv) {
 
   r = Recognizer_Create(0);
   
-  if(Recognizer_LoadModel(r, modelDir) != 0) {
+  //if(Configuration_ApplyConfigFromFilename(r, confFilename) != 0) {
+  if(Recognizer_LoadModel(r, confFilename) != 0) {
     fprintf(stderr, "Failed to load model files, aborting.\n");
     exit(1);
   }         
