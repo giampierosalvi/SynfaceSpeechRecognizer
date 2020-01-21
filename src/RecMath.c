@@ -74,6 +74,7 @@ SparseMatrix *SparseMatrix_Duplicate(SparseMatrix *in) {
   int i,j;
 
   if(in == NULL) return NULL;
+  
   out = SparseMatrix_Create(in->ncols, in->nels);
   for(i=0;i<in->ncols;i++) {
     for(j=0;j<in->nels[i];j++) {
