@@ -46,12 +46,15 @@ ViterbiDecoder *ViterbiDecoder_Create() {
   vd->preDelta = NULL;
   vd->stPrior = NULL;
   vd->transmat = NULL;
+  vd->grammar = NULL;
   vd->phPrior = NULL;
   vd->fisStateId = NULL;
   vd->psi = NULL;
   vd->tempPath = NULL;
   vd->obslik = NULL;
   vd->frameLen = 0;
+  vd->gramfact = 1.0;
+  vd->insweight = 0.0;
   /* to be consistent with backTrackLen = 1 at this point */
   ViterbiDecoder_SetLookahead(vd,vd->maxDelay);
   /* these are needed for off-line proc. Move up to tcl */
@@ -101,6 +104,9 @@ int ViterbiDecoder_FreeGrammar(ViterbiDecoder *vd) {
 
   DBGPRINTF("freing vd->transmat if necessary...\n");
   SparseMatrix_Free(&vd->transmat);
+
+  DBGPRINTF("freing vd->grammar if necessary...\n");
+  SparseMatrix_Free(&vd->grammar);
 
   DBGPRINTF("freing vd->stPrior if necessary...\n");
   Vector_Free(&vd->stPrior);
@@ -274,6 +280,25 @@ int ViterbiDecoder_SetLookahead(ViterbiDecoder *vd, int lookahead) {
   memset(vd->tempPath,0,vd->backTrackLen*sizeof(int));
 
   DBGPRINTF("finished\n");
+  return 0;
+}
+
+/* apply grammar factor and insertion penalty */
+int ViterbiDecoder_Activate(ViterbiDecoder *vd) {
+  int i,j;
+
+  if(vd->grammar == NULL)
+    SparseMatrix_Free(&vd->grammar);
+
+  vd->grammar = SparseMatrix_Duplicate(vd->transmat);
+  for(i=0; i<vd->grammar->ncols; i++) {
+    for(j=0; j<vd->grammar->nels[i];j++) {
+      if(vd->grammar->kind[i][j]) {
+	vd->grammar->data[i][j] *= vd->gramfact;
+	vd->grammar->data[i][j] += vd->insweight;
+      }
+    }
+  }
   return 0;
 }
 
@@ -463,11 +488,11 @@ int ViterbiDecoder_ConsumeFrame(ViterbiDecoder *vd, float *frame, int framelen) 
       vd->delta[to] = NINF; vd->psi[to][vd->relT] = maxfrom;
       continue; }
     else {
-      for(fromidx=0;fromidx<vd->transmat->nels[to];fromidx++) {
-	from = vd->transmat->idxs[to][fromidx];
+      for(fromidx=0;fromidx<vd->grammar->nels[to];fromidx++) {
+	from = vd->grammar->idxs[to][fromidx];
 	if(isinf(vd->preDelta[from]) == -1) continue;
 	else {
-	  val = vd->preDelta[from]+vd->transmat->data[to][fromidx];
+	  val = vd->preDelta[from]+vd->grammar->data[to][fromidx];
 	  if(val>maxval) { maxval=val; maxfrom = from; }
 	}
       }
@@ -594,11 +619,11 @@ void ViterbiDecoder_DumpState(ViterbiDecoder *v) {
   int currentposition = v->tempPath[v->relT];
   int el;
   fprintf(fh, "We are in state: %d, possible precessors:\n", currentposition);
-  if(v->transmat->nels[currentposition] == 0) {
+  if(v->grammar->nels[currentposition] == 0) {
     fprintf(fh, "Panic!!! There's no way we could have got here!!\n");
   } else {
-    for(el=0; el<v->transmat->nels[currentposition]; el++) {
-      fprintf(fh, " %d", v->transmat->idxs[currentposition][el]);
+    for(el=0; el<v->grammar->nels[currentposition]; el++) {
+      fprintf(fh, " %d", v->grammar->idxs[currentposition][el]);
     }
     fprintf(fh, "\n");
   }
@@ -653,6 +678,8 @@ void ViterbiDecoder_DumpModel(ViterbiDecoder *v) {
   DisplayIntVector (fh, v->fisStateId);
   fprintf(fh,"Transition matrix (sparse):\n");
   DisplaySparseMatrix(fh, v->transmat);
+  fprintf(fh,"Grammar (sparse):\n");
+  DisplaySparseMatrix(fh, v->grammar);
   fprintf(fh, "dump finished, have a nice day\n");
   fclose(fh);
 }

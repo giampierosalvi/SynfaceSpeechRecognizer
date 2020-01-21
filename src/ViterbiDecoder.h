@@ -59,8 +59,11 @@ typedef struct {
   LogFloat     *preDelta;     /* [nStates] */
   Vector       *stPrior;      /* [nStates] */
   SparseMatrix *transmat;     /* [nStates][variable] */
+  SparseMatrix *grammar;      /* same as transmat, but with gramfact and insweight */
   Vector       *phPrior;      /* [sizeObs] */
-  IntVector    *fisStateId;    /* */
+  IntVector    *fisStateId;   /* */
+  float         gramfact;     /* grammar factor */
+  float         insweight;    /* insertion weight */
   int         **psi;          /* [nStates][backTrackLen] circular array */
   int          *tempPath;     /* [backTrackLen] circular array */
   /* Grammar scales */
@@ -74,7 +77,10 @@ typedef struct {
 
 /* allocate memory just for the structure */
 ViterbiDecoder *ViterbiDecoder_Create();
-			
+
+/* this is used to apply grammar factor and insertion penalty */
+int ViterbiDecoder_Activate(ViterbiDecoder *vd);
+
 /* reset deltas and partial path */
 int ViterbiDecoder_Reset(ViterbiDecoder *vd);
 
