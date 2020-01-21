@@ -55,10 +55,11 @@ int LikelihoodGen_LoadANN(LikelihoodGen *g, Net *net);
 /* LikelihoodGen_LoadANNFromFile: reads a net from file and
    calls LikelihoodGen_LoadANN to create necessary structures. */
 int LikelihoodGen_LoadANNFromFile(LikelihoodGen *g, FILE *filep);
+int LikelihoodGen_LoadANNFromFilename(LikelihoodGen *g, char *filename);
 /* LikelihoodGen_LoadANNFromBuffer: reads a net from binary buffer and
    calls LikelihoodGen_LoadANN to create necessary structures. 
 
-   Call this instead of LikelihoodGen_LoadANNFromFile when you do not
+   Call this instead of LikelihoodGen_LoadANNFromFilename when you do not
    have access to the file system, for example when running within tcl
    in tclwrap mode. */
 int LikelihoodGen_LoadANNFromBuffer(LikelihoodGen *g, BinaryBuffer *buf);

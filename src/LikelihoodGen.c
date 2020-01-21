@@ -133,6 +133,20 @@ int LikelihoodGen_LoadANNFromFile(LikelihoodGen *g, FILE *filep) {
   return 0;
 }
 
+int LikelihoodGen_LoadANNFromFilename(LikelihoodGen *g, char *filename) {
+  FILE *f = NULL;
+
+  f = fopen(filename, "rb");
+  if (!f) {
+    fprintf(stderr, "cannot open file %s", filename);
+    error();
+  }
+  LikelihoodGen_LoadANNFromFile(g, f);
+  fclose(f);
+
+  return 0;
+}
+
 int LikelihoodGen_LoadANNFromBuffer(LikelihoodGen *g, BinaryBuffer *buf) {
   Net *net;
 
