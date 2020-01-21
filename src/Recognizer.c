@@ -124,111 +124,6 @@ Recognizer *Recognizer_Create(int liveAudio) {
   return r;
 }
 
-/* this assumes that r has been created, make more safe! */
-/* Should be substituted by Configuration_ApplyConfigFromFile */
-int Recognizer_LoadModel(Recognizer *r, char* dir) {
-  char filename[2048];
-  int dirlen = strlen(dir);
-  int n=0, m=0;
-  FILE *f;
-  Vector *pp;
-  float gramfact, insweight;
-  SparseMatrix *hmmTransmat = NULL;
-  Vector *hmmStPrior = NULL;
-  IntVector *hmmFisStateId = NULL;
-
-  if(dirlen>2000) {
-    fprintf(stderr, "maximum dir len is 2000, received %d", dirlen);
-    return -1;
-  }
-  /* load configuration file */
-  strcpy(filename, dir);
-  strcat(filename, "/parameters.conf");
-  f = fopen(filename, "r");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", filename);
-    return -1;
-  }
-  /* these are hard coded at the moment but should be read from the file */
-  r->fe->inputrate = 8000;
-  r->fe->numfilters = 24;
-  r->fe->numceps = 12;
-  r->fe->lowfreq = 0.0;
-  r->fe->hifreq = 4000.0;
-  r->fe->framestep = 0.01;
-  r->fe->framelen = 0.025;
-  r->fe->preemph = 0.97;
-  r->fe->lifter = 22.0;
-  gramfact = 1;
-  insweight = 0;
-  
-  /* load RNN model */
-  strcpy(filename, dir);
-  strcat(filename, "/rnn.rtd");
-  f = fopen(filename, "rb");
-  if (!f) {
-    fprintf(stderr, "cannot open file %s\n", filename);
-    return -1;
-  }
-  LikelihoodGen_LoadANNFromFile(r->lg, f);
-  fclose(f);
-  Recognizer_GetOutSym(r);
-  
-  /* load phoneme prior */
-  strcpy(filename, dir);
-  strcat(filename, "/phone_prior.txt");
-  pp = Vector_LoadFromFilename(filename);
-  LikelihoodGen_SetPhPrior(r->lg,pp);
-  
-  /* load HMM model */
-  //r->vd = ViterbiDecoder_Create();
-    
-  /* load HMM state prior */
-  n = 0;
-  strcpy(filename, dir);
-  strcat(filename, "/hmm_prior.txt");
-  hmmStPrior = Vector_LoadFromFilename(filename);
-  if (!hmmStPrior) {
-    fprintf(stderr, "could not load data from %s\n", filename);
-  }
-  /* invert numbers */
-  for (n = 0; n < hmmStPrior->nels; n++)
-    hmmStPrior->data[n] *= -1;
-
-  /* load HMM transition matrix */
-  strcpy(filename, dir);
-  strcat(filename, "/hmm_transmat.txt");
-  hmmTransmat = SparseMatrix_LoadFromFilename(filename, 1);
-  /* invert values and apply grammar factor and insertion weight */
-  for (n = 0; n < hmmTransmat->ncols; n++) {
-    for (m = 0; m < hmmTransmat->nels[n]; m++) {
-      hmmTransmat->data[n][m] *= -1;
-      if (hmmTransmat->kind[n][m]) {
-        hmmTransmat->data[n][m] *= gramfact;
-        hmmTransmat->data[n][m] += insweight;
-      }
-    }
-  }
-
-  /* fis state id */
-  strcpy(filename, dir);
-  strcat(filename, "/hmm_map.txt");
-  hmmFisStateId = IntVector_LoadFromFilename(filename);
-  /* convert from matlab to C format */
-  for (n = 0; n < hmmFisStateId->nels; n++)
-    hmmFisStateId->data[n] -= 1;
-  
-  ViterbiDecoder_SetGrammar(r->vd,hmmTransmat,hmmStPrior,hmmFisStateId);
-
-  /* make data consistent */
-  ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
-
-  /* set lookahead. This is hard coded, but should be read from parameter file */
-  Recognizer_SetLookahead(r, 3);
-
-  return 0;
-}
-
 int Recognizer_GetOutSym(Recognizer *r) {
   int i;
   int len;
@@ -654,6 +549,9 @@ int Recognizer_Start(Recognizer *r) {
 
   DBGPRINTF("entering\n");
   if(!r->stopped) return 0;
+
+  /* make data consistent */
+  ViterbiDecoder_SetFrameLen(r->vd, LikelihoodGen_GetOutSize(r->lg));
 
   /* some initialization */
   r->currFrame = 0;
