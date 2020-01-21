@@ -159,8 +159,8 @@ int main(int argc, char **argv) {
 
   r = Recognizer_Create(0);
   
-  //if(Configuration_ApplyConfigFromFilename(r, confFilename) != 0) {
-  if(Recognizer_LoadModel(r, confFilename) != 0) {
+  if(Configuration_ApplyConfigFromFilename(r, confFilename) != 0) {
+  //if(Recognizer_LoadModel(r, confFilename) != 0) {
     fprintf(stderr, "Failed to load model files, aborting.\n");
     exit(1);
   }         

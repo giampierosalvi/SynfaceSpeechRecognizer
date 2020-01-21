@@ -76,14 +76,14 @@ int main(int argc, char **argv) {
   r = Recognizer_Create(1);
 
   printf("loading recognition models...\n"); fflush(stdout);
-  if(Recognizer_LoadModel(r, "../share/swedish") != 0) {
+  if(Configuration_ApplyConfigFromFilename(r, "../share/swedish/parameters.conf") != 0) {
     fprintf(stderr, "Failed to load model files, aborting.\n");
     exit(1);
   }
 
   printf("setting callback to display results...\n"); fflush(stdout);
   Recognizer_SetCallback(r, (RecognizerCallbackProc *) &display_results);
-    
+
   /* test three times to check memory management */
   for(i=0; i<3; i++) {
     //while(1) {
