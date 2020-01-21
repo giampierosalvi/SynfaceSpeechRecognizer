@@ -10,7 +10,7 @@ CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector $(ASANFLAGS)
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
 LDLIBS = -lportaudio -lnico -lm
 
-modules = Audio.o BinaryBuffer.o Common.o FeatureExtraction.o LikelihoodGen.o \
+modules = Audio.o BinaryBuffer.o Common.o Configuration.o FeatureExtraction.o LikelihoodGen.o \
 	nrg.o RecMath.o Recognizer.o RingBuffer.o SoundProc.o \
 	SoundIO.o ViterbiDecoder.o
 
