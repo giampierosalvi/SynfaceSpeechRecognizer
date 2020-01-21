@@ -139,7 +139,7 @@ int LikelihoodGen_LoadANNFromFilename(LikelihoodGen *g, char *filename) {
   f = fopen(filename, "rb");
   if (!f) {
     fprintf(stderr, "cannot open file %s", filename);
-    error();
+    return -1;
   }
   LikelihoodGen_LoadANNFromFile(g, f);
   fclose(f);
