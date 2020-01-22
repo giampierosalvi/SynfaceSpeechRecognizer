@@ -48,14 +48,18 @@ make
 
 ### Running the test programs
 In the `src` directory you can find a number of test programs to test various aspects of the code:
+#### test_portaudio
+lists all the available audio devices. Selecting a device, the program opens, closes, starts and stops streams a number of times in order to check possible memory leaks.
 ```
 ./test_portaudio
 ```
-lists all the available audio devices. Selecting a device, the program opens, closes, starts and stops streams a number of times in order to check possible memory leaks.
+#### test_playback
+plays back the sound from the default input device on the default output device. It can be used to test the minimum audio latency, but also the delay that can be added to synchronize the speech with the avatar generated articulation. **Run this program using a headset as default device to prevent audio feedback.**
 ```
 ./test_playback
 ```
-plays back the sound from the default input device on the default output device. It can be used to test the minimum audio latency, but also the delay that can be added to synchronize the speech with the avatar generated articulation. **Run this program using a headset as default device to prevent audio feedback.**
+#### test_recognizer_offline
+Reads the models for that particular language and an input audio file and produces a phonetic transcription with time stamps.
 ```
 ./test_recognizer_offline <configuration file> <input audio file> <output label>
 ```
@@ -63,8 +67,8 @@ for example
 ```
 ./test_recognizer_offline ../share/swedish/parameters.conf <input audio file> <output label>
 ```
-Reads the models for that particular language and an input audio file and produces a phonetic transcription with time stamps.
+#### test_recognizer_live
+Runs the recognizer live. It also plays back the audio with a delay that should correspond to delay of animation of the avatar, that is, if the results of the recognizer are fed into the animation system, the articulation should be synchronous with audio playback.
 ```
 ./test_recognizer_live
 ```
-Runs the recognizer live. It also plays back the audio with a delay that should correspond to delay of animation of the avatar, that is, if the results of the recognizer are fed into the animation system, the articulation should be synchronous with audio playback.
