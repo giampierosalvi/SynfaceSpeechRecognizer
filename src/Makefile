@@ -1,5 +1,4 @@
 NICOLIB = ../ext/nico-1.1.2/lib
-#NICOLIB = ../ext/nico
 CC	= gcc
 # CC	= clang
 OPT	= -O -ffast-math
