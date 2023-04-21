@@ -1,6 +1,6 @@
 NICOLIB = ../ext/nico-1.1.2/lib
 CC	= gcc
-# CC	= clang
+CC	= clang
 OPT	= -O -ffast-math
 ASANFLAGS = -fsanitize=address -O0 -fno-omit-frame-pointer
 CFLAGSDEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
@@ -9,14 +9,29 @@ CFLAGS	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector $(ASANFLAGS)
 LDFLAGS = -L/usr/lib/x86_64-linux-gnu/ -L$(NICOLIB)
 LDLIBS = -lportaudio -lnico -lm
 
-modules = Audio.o BinaryBuffer.o Common.o Configuration.o FeatureExtraction.o LikelihoodGen.o \
-	nrg.o RecMath.o Recognizer.o RingBuffer.o SoundProc.o \
-	SoundIO.o ViterbiDecoder.o
+modules = \
+	Audio.o \
+	BinaryBuffer.o \
+	Common.o \
+	Configuration.o \
+	FeatureExtraction.o \
+	LikelihoodGen.o \
+	nrg.o \
+	RecMath.o \
+	Recognizer.o \
+	RingBuffer.o \
+	SoundProc.o \
+	SoundIO.o \
+	ViterbiDecoder.o
 
-tests = test_playback test_portaudio test_recognizer_live test_recognizer_offline
+tests = \
+	test_playback \
+	test_portaudio \
+	test_recognizer_live \
+	test_recognizer_offline
 
-debug: CFLAGS += -DDEBUG -g
-debug: test_recognizer_offline test_recognizer_live
+debug: CFLAGS += -DDEBUG -fsanitize=address -g
+debug: $(tests)
 
 all: librec.a $(tests)
 
@@ -41,5 +56,6 @@ clean:
 	rm -f $(tests)
 
 # this is what to do to get symbols from AddressSanitizer:
-# export ASAN_SYMBOLIZER_PATH=/usr/lib/llvm-3.8/bin/llvm-symbolizer
+# sudo apt install llvm clang
+# export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
 # ASAN_OPTIONS=symbolize=1 ./test_recognizer_live

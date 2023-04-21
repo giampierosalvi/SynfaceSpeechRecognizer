@@ -2,7 +2,7 @@
                           test_playback.c  -  description
                              -------------------
     begin                : Mon Dec 10 2012
-    copyright            : (C) 2012-2017 by Giampiero Salvi
+    copyright            : (C) 2012-2023 by Giampiero Salvi
     email                : giampi@kth.se
 
     This program is free software: you can redistribute it and/or modify
