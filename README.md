@@ -33,7 +33,7 @@ The BibTeX code for the above publications is below
   volume = 	 {48},
   number = 	 {7},
   pages = 	 {802--818},
-  month = 	 jul
+  month = 	 jul,
   doi =          {10.1016/j.specom.2005.05.005}
 }
 @Article{gs:Salvi2006b,
