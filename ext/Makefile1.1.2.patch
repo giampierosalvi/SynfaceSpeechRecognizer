@@ -1,0 +1,9 @@
+--- nico-1.1.2/lib/Makefile_orig	2023-04-21 10:01:29.881261431 +0200
++++ nico-1.1.2/lib/Makefile	2023-04-21 10:04:34.330006343 +0200
+@@ -1,5 +1,5 @@
+ CC	= gcc
+-OPT	= -O -ffast-math 
++OPT	= -O -ffast-math -fno-builtin
+ CFLAGS	= $(OPT) -Wall 
+ 
+ modules = AudioData.o LabelData.o RTDNN.o Speetures.o \
