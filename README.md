@@ -12,7 +12,6 @@ The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface
 
 ### Main publications
 If you find this code useful, or if you would like to refer to it for historical reasons, please consider citing the following papers.
-There are many publications describing the system as a whole and experiments with hearing impaired users that can be found [here](http://www.kth.se/profile/giampi/publications/) searching for the term SynFace. However, the publications where the recognizer is described in some details are mainly the ones below:
 
 **Dynamic behavior of connectionist speech recognition with strong latency constraints**  
 *Giampiero Salvi*  
@@ -49,6 +48,7 @@ The BibTeX code for the above publications is below
   doi =          {10.1016/j.specom.2006.07.009}
 }
 ```
+If you would like to refer to the Synface system as a whole and to the experiments with hearing impaired users, please search for the term SynFace in the publications listed [here](https://orcid.org/0000-0002-3323-5311).
 
 ## Instructions
 The code can be built on GNU/Linux, Windows (mingw) and Mac using the GNU compiler. The following instructions are for Ubuntu GNU/Linux (tested on Ubuntu 22.04). CMake files with cross platform build instructions have been currently removed from the repository until I have time to clean them from the dependencies from the EyePhone application.
