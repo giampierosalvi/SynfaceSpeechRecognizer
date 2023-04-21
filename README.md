@@ -9,6 +9,7 @@ The Synface application uses speech recognition to animate a synthetic face in r
 The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface](http://www.speech.kth.se/synface/) projects was to use this technology to improve telephone communication for hearing impaired persons. The technology has been commercialized between 2006 and 2016 by the Swedish company Synface AB that no longer exists. The blocks with colored background are implemented by the code in this repository. Not included here is the code to train the RNN-HMM models and to animate and render the 3D face model. Also, the code in this repository has been cleaned up from references to the EyePhone application, in particular the Tcl-tk interface used to configure the recognizer from a GUI and to connect it to the face animation software.
 
 ### Main publications
+If you find this code useful, or if you would like to refer to it for historical reasons, please consider citing the following papers.
 There are many publications describing the system as a whole and experiments with hearing impaired users that can be found [here](http://www.kth.se/profile/giampi/publications/) searching for the term SynFace. However, the publications where the recognizer is described in some details are mainly the ones below:
 
 **Dynamic behavior of connectionist speech recognition with strong latency constraints**  
@@ -20,6 +21,32 @@ DOI: [10.1016/j.specom.2005.05.005](https://doi.org/10.1016/j.specom.2005.05.005
 *Giampiero Salvi*  
 Speech Communication, volume 48, issue 12, December 2006, pages 1666-1676  
 DOI: [10.1016/j.specom.2006.07.009](https://doi.org/10.1016/j.specom.2006.07.009)
+
+The BibTeX code for the above publications is below
+```
+@Article{gs:Salvi2006,
+  author = 	 {Giampiero Salvi},
+  title = 	 {Dynamic Behaviour of Connectionist Speech Recognition with Strong Latency Constraints},
+  journal = 	 {Speech Communication},
+  year = 	 {2006},
+  volume = 	 {48},
+  number = 	 {7},
+  pages = 	 {802--818},
+  month = 	 jul
+  doi =          {10.1016/j.specom.2005.05.005}
+}
+@Article{gs:Salvi2006b,
+  author = 	 {Giampiero Salvi},
+  title = 	 {Segment Boundary Detection via Class Entropy Measurements in Connectionist Phoneme Recognition},
+  journal = 	 {Speech Communication},
+  year = 	 {2006},
+  volume = 	 {48},
+  number = 	 {12},
+  pages = 	 {1666--1676},
+  month = 	 dec,
+  doi =          {10.1016/j.specom.2006.07.009}
+}
+```
 
 ## Instructions
 The code can be built on GNU/Linux, Windows (mingw) and Mac using the GNU compiler. The following instructions are for Ubuntu GNU/Linux (tested on Ubuntu 18.04). CMake files with cross platform build instructions may be added in the future when I have time to clean them from the dependencies from the EyePhone application.
