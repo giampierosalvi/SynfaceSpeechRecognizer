@@ -51,7 +51,7 @@ The BibTeX code for the above publications is below
 ```
 
 ## Instructions
-The code can be built on GNU/Linux, Windows (mingw) and Mac using the GNU compiler. The following instructions are for Ubuntu GNU/Linux (tested on Ubuntu 18.04). CMake files with cross platform build instructions may be added in the future when I have time to clean them from the dependencies from the EyePhone application.
+The code can be built on GNU/Linux, Windows (mingw) and Mac using the GNU compiler. The following instructions are for Ubuntu GNU/Linux (tested on Ubuntu 22.04). CMake files with cross platform build instructions have been currently removed from the repository until I have time to clean them from the dependencies from the EyePhone application.
 
 The repository is divided into the following parts:
 * `src`: C files defining the recognizer
