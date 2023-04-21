@@ -1,6 +1,6 @@
 NICOLIB = ../ext/nico-1.1.2/lib
 CC	= gcc
-CC	= clang
+#CC	= clang
 OPT	= -O -ffast-math
 ASANFLAGS = -fsanitize=address -O0 -fno-omit-frame-pointer
 CFLAGSDEBUG	= -g $(OPT) -Wall -I$(NICOLIB) -D DEBUG -fno-stack-protector
@@ -30,7 +30,7 @@ tests = \
 	test_recognizer_live \
 	test_recognizer_offline
 
-debug: CFLAGS += -DDEBUG -fsanitize=address -g
+debug: CFLAGS += -DDEBUG -g
 debug: $(tests)
 
 all: librec.a $(tests)
