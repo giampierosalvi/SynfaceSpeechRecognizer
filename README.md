@@ -1,16 +1,17 @@
 # Synface Speech Recognizer
-This repository holds the code for the speech recognizer used in the Synface European project and later in the SynFace AB product called EyePhone. I am releasing it here for its legacy value and in the hope that it might be useful to someone. The recognizer uses **recurrent neural networks (RNNs) and hidden Markov models (HMMs) to classify speech into phonetic classes**. This was a early use of this technology (development started in 1999) that has become mainstream with the recent advances in Deep Learning and was later surclassed by end-to-end systems. However, these kinds of hybrid DNN-HMM methods are still relevant when the focus is on saving computational resrources and providing low-latency responses. In the code provided here, the main focus was ensuring **real-time** and especially **low latency** processing with the hardware available at the time. The accuracy of this recognizer, however, is not comparable with that achievable with state-of-the-art systems today.
+This repository holds the code for the speech recognizer used in the [Synface European project](https://cordis.europa.eu/article/id/22557-eu-project-helps-the-hard-of-hearing-to-communicate-by-telephone) and later in the SynFace AB product called EyePhone. I am releasing it here for its legacy value and in the hope that it might be useful to someone. The recognizer is **written in pure C** and uses **recurrent neural networks (RNNs) and hidden Markov models (HMMs) to classify speech into phonetic classes**. This was a early use of this technology (development started in 1999) that has become mainstream with the advances in Deep Learning and was later surclassed by end-to-end systems. However, this kind of hybrid DNN-HMM methods may still be relevant when the focus is on saving computational resources and providing low-latency responses. In the code provided here, the main focus was ensuring **real-time** and especially **low latency** processing with the hardware available at the time. The accuracy of this recognizer, however, is not comparable with that achievable with state-of-the-art systems today.
+
+NOTE: The code is provided as is, and with no support.
 
 ## Synface Architecture
 The Synface application uses speech recognition to animate a synthetic face in real time and with low latency for teleconference applications. The advantage over video conference is that any sound source can be animated this way. In teleconference settings, the participants do not need a camera for this to work.
 
 ![alt text](https://github.com/giampierosalvi/SynfaceSpeechRecognizer/blob/master/doc/synface_architecture.png "Synface Architecture")
 
-The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface](http://www.speech.kth.se/synface/) projects was to use this technology to improve telephone communication for hearing impaired persons. The technology has been commercialized between 2006 and 2016 by the Swedish company Synface AB that no longer exists. The blocks with colored background are implemented by the code in this repository. Not included here is the code to train the RNN-HMM models and to animate and render the 3D face model. Also, the code in this repository has been cleaned up from references to the EyePhone application, in particular the Tcl-tk interface used to configure the recognizer from a GUI and to connect it to the face animation software.
+The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface](https://cordis.europa.eu/article/id/22557-eu-project-helps-the-hard-of-hearing-to-communicate-by-telephone) projects was to use this technology to improve telephone communication for hearing impaired persons. The technology has been commercialized between 2006 and 2016 by the Swedish company Synface AB that no longer exists. The blocks with colored background are implemented by the code in this repository. Not included here is the code to train the RNN-HMM models and to animate and render the 3D face model. Also, the code in this repository has been cleaned up from references to the EyePhone application, in particular the Tcl-tk interface used to configure the recognizer from a GUI and to connect it to the face animation software.
 
 ### Main publications
-If you find this code useful, or if you would like to refer to it for historical reasons, please consider citing the following papers.
-There are many publications describing the system as a whole and experiments with hearing impaired users that can be found [here](http://www.kth.se/profile/giampi/publications/) searching for the term SynFace. However, the publications where the recognizer is described in some details are mainly the ones below:
+If you find this code useful, or if you would like to refer to it for historical reasons, please consider citing the following papers:
 
 **Dynamic behavior of connectionist speech recognition with strong latency constraints**  
 *Giampiero Salvi*  
@@ -24,7 +25,7 @@ DOI: [10.1016/j.specom.2006.07.009](https://doi.org/10.1016/j.specom.2006.07.009
 
 The BibTeX code for the above publications is below
 ```
-@Article{gs:Salvi2006,
+@Article{Salvi2006,
   author = 	 {Giampiero Salvi},
   title = 	 {Dynamic Behaviour of Connectionist Speech Recognition with Strong Latency Constraints},
   journal = 	 {Speech Communication},
@@ -32,10 +33,10 @@ The BibTeX code for the above publications is below
   volume = 	 {48},
   number = 	 {7},
   pages = 	 {802--818},
-  month = 	 jul
+  month = 	 jul,
   doi =          {10.1016/j.specom.2005.05.005}
 }
-@Article{gs:Salvi2006b,
+@Article{Salvi2006b,
   author = 	 {Giampiero Salvi},
   title = 	 {Segment Boundary Detection via Class Entropy Measurements in Connectionist Phoneme Recognition},
   journal = 	 {Speech Communication},
@@ -47,9 +48,10 @@ The BibTeX code for the above publications is below
   doi =          {10.1016/j.specom.2006.07.009}
 }
 ```
+If you would like to refer to the Synface system as a whole and to the experiments with hearing impaired users, please search for the term SynFace in the publications listed [here](https://orcid.org/0000-0002-3323-5311).
 
 ## Instructions
-The code can be built on GNU/Linux, Windows (mingw) and Mac using the GNU compiler. The following instructions are for Ubuntu GNU/Linux (tested on Ubuntu 18.04). CMake files with cross platform build instructions may be added in the future when I have time to clean them from the dependencies from the EyePhone application.
+The code can be built on GNU/Linux, Windows (mingw) and Mac using the GNU compiler. The following instructions are for Ubuntu GNU/Linux (tested on Ubuntu 22.04). CMake files with cross platform build instructions have been currently removed from the repository until I have time to clean them from the dependencies from the EyePhone application.
 
 The repository is divided into the following parts:
 * `src`: C files defining the recognizer
