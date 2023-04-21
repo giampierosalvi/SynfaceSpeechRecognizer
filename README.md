@@ -25,7 +25,7 @@ DOI: [10.1016/j.specom.2006.07.009](https://doi.org/10.1016/j.specom.2006.07.009
 
 The BibTeX code for the above publications is below
 ```
-@Article{gs:Salvi2006,
+@Article{Salvi2006,
   author = 	 {Giampiero Salvi},
   title = 	 {Dynamic Behaviour of Connectionist Speech Recognition with Strong Latency Constraints},
   journal = 	 {Speech Communication},
@@ -36,7 +36,7 @@ The BibTeX code for the above publications is below
   month = 	 jul,
   doi =          {10.1016/j.specom.2005.05.005}
 }
-@Article{gs:Salvi2006b,
+@Article{Salvi2006b,
   author = 	 {Giampiero Salvi},
   title = 	 {Segment Boundary Detection via Class Entropy Measurements in Connectionist Phoneme Recognition},
   journal = 	 {Speech Communication},
