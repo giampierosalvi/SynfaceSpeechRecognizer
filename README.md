@@ -1,6 +1,8 @@
 # Synface Speech Recognizer
 This repository holds the code for the speech recognizer used in the [Synface European project](https://cordis.europa.eu/article/id/22557-eu-project-helps-the-hard-of-hearing-to-communicate-by-telephone) and later in the SynFace AB product called EyePhone. I am releasing it here for its legacy value and in the hope that it might be useful to someone. The recognizer uses **recurrent neural networks (RNNs) and hidden Markov models (HMMs) to classify speech into phonetic classes**. This was a early use of this technology (development started in 1999) that has become mainstream with the advances in Deep Learning and was later surclassed by end-to-end systems. However, these kinds of hybrid DNN-HMM methods may still be relevant when the focus is on saving computational resrources and providing low-latency responses. In the code provided here, the main focus was ensuring **real-time** and especially **low latency** processing with the hardware available at the time. The accuracy of this recognizer, however, is not comparable with that achievable with state-of-the-art systems today.
 
+NOTE: The code is provided as is, and with no support.
+
 ## Synface Architecture
 The Synface application uses speech recognition to animate a synthetic face in real time and with low latency for teleconference applications. The advantage over video conference is that any sound source can be animated this way. In teleconference settings, the participants do not need a camera for this to work.
 
