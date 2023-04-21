@@ -11,7 +11,7 @@ The Synface application uses speech recognition to animate a synthetic face in r
 The main goal in the [Teleface](http://www.speech.kth.se/teleface/) and [Synface](https://cordis.europa.eu/article/id/22557-eu-project-helps-the-hard-of-hearing-to-communicate-by-telephone) projects was to use this technology to improve telephone communication for hearing impaired persons. The technology has been commercialized between 2006 and 2016 by the Swedish company Synface AB that no longer exists. The blocks with colored background are implemented by the code in this repository. Not included here is the code to train the RNN-HMM models and to animate and render the 3D face model. Also, the code in this repository has been cleaned up from references to the EyePhone application, in particular the Tcl-tk interface used to configure the recognizer from a GUI and to connect it to the face animation software.
 
 ### Main publications
-If you find this code useful, or if you would like to refer to it for historical reasons, please consider citing the following papers.
+If you find this code useful, or if you would like to refer to it for historical reasons, please consider citing the following papers:
 
 **Dynamic behavior of connectionist speech recognition with strong latency constraints**  
 *Giampiero Salvi*  
